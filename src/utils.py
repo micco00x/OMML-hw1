@@ -67,6 +67,8 @@ def plot_3d(X, Y, Z, filename=None):
 	else:
 		plt.show()
 
+	plt.close()
+
 def scatterplot_3d(X, Y, Z):
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
@@ -77,3 +79,5 @@ def scatterplot_3d(X, Y, Z):
 	ax.set_ylabel("x2")
 
 	plt.show()
+
+	plt.close()
