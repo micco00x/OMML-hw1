@@ -45,8 +45,8 @@ def plot_franke():
 
 	plot_3d(X, Y, Z)
 
-def plot_3d(X, Y, Z):
-	fig = plt.figure()
+def plot_3d(X, Y, Z, filename=None):
+	fig = plt.figure(dpi=720)
 	ax = fig.gca(projection='3d')
 
 	# Plot the surface.
@@ -62,7 +62,10 @@ def plot_3d(X, Y, Z):
 	# Add a color bar which maps values to colors.
 	fig.colorbar(surf, shrink=0.5, aspect=5)
 
-	plt.show()
+	if filename:
+		plt.savefig(filename)
+	else:
+		plt.show()
 
 def scatterplot_3d(X, Y, Z):
 	fig = plt.figure()
