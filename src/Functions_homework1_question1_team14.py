@@ -25,10 +25,14 @@ class MLP:
 		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error)
 
 	# Train the MLP on the dataset for a specified number of epochs:
-	def train(self, sess, X_train, Y_train, epochs):
+	def train(self, sess, X_train, Y_train, epochs, verbose=False):
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
-			sess.run(self.train_step, feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			if verbose:
+				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
+		if verbose:
+			print("")
 
 	# Evaluate the MLP on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -62,10 +66,14 @@ class RBFN:
 		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error)
 
 	# Train the RBFN on the dataset for a specified number of epochs:
-	def train(self, sess, X_train, Y_train, epochs):
+	def train(self, sess, X_train, Y_train, epochs, verbose=False):
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
-			sess.run(self.train_step, feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			if verbose:
+				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
+		if verbose:
+			print("")
 
 	# Evaluate the RBFN on the test set:
 	def evaluate(self, sess, X_test, Y_test):

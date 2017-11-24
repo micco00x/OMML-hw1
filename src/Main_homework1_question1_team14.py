@@ -54,7 +54,7 @@ if TEST_MLP:
 
 			# Define MLP, train and evaluate on training and test sets:
 			mlp = MLP(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
-			mlp.train(sess, X_train, Y_train, EPOCHS)
+			mlp.train(sess, X_train, Y_train, EPOCHS, True)
 			training_error = mlp.evaluate(sess, X_train, Y_train)
 			test_error = mlp.evaluate(sess, X_test, Y_test)
 			print("Training error: %g" % training_error)
@@ -151,7 +151,7 @@ if TEST_RBFN:
 
 			# Define RBFN, train and evaluate on training and test sets:
 			rbfn = RBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
-			rbfn.train(sess, X_train, Y_train, EPOCHS)
+			rbfn.train(sess, X_train, Y_train, EPOCHS, True)
 			training_error = rbfn.evaluate(sess, X_train, Y_train)
 			test_error = rbfn.evaluate(sess, X_test, Y_test)
 			print("Training error: %g" % training_error)
