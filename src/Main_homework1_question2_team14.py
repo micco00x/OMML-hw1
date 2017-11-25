@@ -21,6 +21,7 @@ X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE
 g = lambda t: (1-np.exp(-sigma*t))/(1+np.exp(-sigma*t))
 P = X_train.shape[0]
 
+best_training_error = float("inf")
 best_test_error = float("inf")
 
 for _ in range(N_EXPERIMENTS):
@@ -40,9 +41,11 @@ for _ in range(N_EXPERIMENTS):
 
 	# Update best_mlp:
 	if test_error < best_test_error:
+		best_training_error = training_error
 		best_test_error = test_error
 		best_mlp = f
 
+print("best_training_error:", best_training_error)
 print("best_test_error:", best_test_error)
 
 # Generate data to evaluate, used to plot the approximated function:
