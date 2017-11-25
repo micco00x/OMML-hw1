@@ -87,11 +87,11 @@ if TEST_RBFN:
 
 	# hparams:
 	TEST_SIZE = 0.3
-	EPOCHS = 10000
-	HIDDEN = [10, 20, 50]
+	EPOCHS = 12500
+	HIDDEN = [25, 50, 75]
 	ETA = 1e-3
 	RHO = [1e-3, 1e-4, 1e-5]
-	SIGMA = [1, 2, 3, 4]
+	SIGMA = [0.25, 0.5, 0.75, 1]
 
 	# Double check hparams:
 	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
