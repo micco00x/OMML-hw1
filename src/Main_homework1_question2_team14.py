@@ -27,7 +27,7 @@ for _ in range(N_EXPERIMENTS):
 	G, W, b = generate_MLP(X_train, N, g)
 
 	# Solve the linear system for LLSQ problem:
-	v = np.linalg.solve(2/(2*P) * np.matmul(G.T, G) + rho * np.identity(N), np.matmul(G.T, Y_train)/P)
+	v = np.linalg.solve(2*(np.matmul(G.T, G)/(2*P) + rho * np.identity(N)), np.matmul(G.T, Y_train)/P)
 
 	# f is the MLP as specified in Q1E1:
 	f = lambda x: np.sum(np.multiply(v, g(np.matmul(x, W) - b)), 1)
