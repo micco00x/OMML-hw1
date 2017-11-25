@@ -5,8 +5,12 @@ import utils
 
 from Functions_homework1_question1_team14 import MLP, RBFN
 
+# Debug MLP and RBFN:
 TEST_MLP = True
 TEST_RBFN = True
+
+# Save figures:
+SAVE_FIG = False
 
 # Question 1 - Exercise 1: Multi-Layer Perceptron
 if TEST_MLP:
@@ -17,7 +21,7 @@ if TEST_MLP:
 	# hparams:
 	TEST_SIZE = 0.3
 	EPOCHS = 15000
-	HIDDEN = [15, 25, 50]
+	HIDDEN = [25, 50, 75]
 	ETA = 1e-3
 	RHO = [1e-3, 1e-4, 1e-5]
 	SIGMA = [1, 2, 3, 4]
@@ -57,17 +61,18 @@ if TEST_MLP:
 			print("Test error: %g" % test_error)
 
 			# Generate data to evaluate, used to plot the approximated function:
-			x_range = np.arange(0, 1, 0.01)
-			y_range = np.arange(0, 1, 0.01)
-			x_grid, y_grid = np.meshgrid(x_range, y_range)
-			input_data = []
-			for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-				input_data.append([x1, x2])
-			input_data = np.array(input_data)
-			z_value = np.array(mlp.predict(sess, input_data))
-			z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-			filename = "MLP_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-			utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+			if SAVE_FIG:
+				x_range = np.arange(0, 1, 0.01)
+				y_range = np.arange(0, 1, 0.01)
+				x_grid, y_grid = np.meshgrid(x_range, y_range)
+				input_data = []
+				for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
+					input_data.append([x1, x2])
+				input_data = np.array(input_data)
+				z_value = np.array(mlp.predict(sess, input_data))
+				z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
+				filename = "MLP_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
+				utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
 			
 			# Update best_mlp:
 			if test_error < best_test_error:
@@ -130,17 +135,18 @@ if TEST_RBFN:
 			print("Test error: %g" % test_error)
 			
 			# Generate data to evaluate, used to plot the approximated function:
-			x_range = np.arange(0, 1, 0.01)
-			y_range = np.arange(0, 1, 0.01)
-			x_grid, y_grid = np.meshgrid(x_range, y_range)
-			input_data = []
-			for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-				input_data.append([x1, x2])
-			input_data = np.array(input_data)
-			z_value = np.array(rbfn.predict(sess, input_data))
-			z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-			filename = "RBFN_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-			utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+			if SAVE_FIG:
+				x_range = np.arange(0, 1, 0.01)
+				y_range = np.arange(0, 1, 0.01)
+				x_grid, y_grid = np.meshgrid(x_range, y_range)
+				input_data = []
+				for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
+					input_data.append([x1, x2])
+				input_data = np.array(input_data)
+				z_value = np.array(rbfn.predict(sess, input_data))
+				z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
+				filename = "RBFN_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
+				utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
 		
 			# Update best_rbfn:
 			if test_error < best_test_error:
