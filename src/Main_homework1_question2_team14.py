@@ -3,7 +3,7 @@ import sklearn
 from sklearn import cluster
 import utils
 
-from Functions_homework1_question2_team14 import generate_MLP, generate_RBFN
+from Functions_homework1_question2_team14 import generate_MLP, generate_RBFN, plot_approximated_function
 
 TEST_MLP = True
 TEST_RBFN = True
@@ -60,16 +60,8 @@ if TEST_MLP:
 	print("best_test_error:", best_test_error)
 
 	# Generate data to evaluate, used to plot the approximated function:
-	x_range = np.arange(0, 1, 0.01)
-	y_range = np.arange(0, 1, 0.01)
-	x_grid, y_grid = np.meshgrid(x_range, y_range)
-	input_data = []
-	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-		input_data.append([x1, x2])
-	input_data = np.array(input_data)
-	z_value = np.array(best_mlp(input_data))
-	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-	utils.plot_3d(x_grid, y_grid, z_grid, "../images/MLP_Extreme_Learning")
+	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning")
+
 
 # Question 2 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
@@ -125,13 +117,5 @@ if TEST_RBFN:
 	print("best_test_error:", best_test_error)
 
 	# Generate data to evaluate, used to plot the approximated function:
-	x_range = np.arange(0, 1, 0.01)
-	y_range = np.arange(0, 1, 0.01)
-	x_grid, y_grid = np.meshgrid(x_range, y_range)
-	input_data = []
-	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-		input_data.append([x1, x2])
-	input_data = np.array(input_data)
-	z_value = np.array(best_rbfn(input_data))
-	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-	utils.plot_3d(x_grid, y_grid, z_grid, "../images/RBFN_Extreme_Learning")
+	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning")
+	

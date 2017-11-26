@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import utils
 
-from Functions_homework1_question1_team14 import MLP, RBFN
+from Functions_homework1_question1_team14 import MLP, RBFN, plot_approximated_function
 
 # Debug MLP and RBFN:
 TEST_MLP = True
@@ -62,17 +62,8 @@ if TEST_MLP:
 
 			# Generate data to evaluate, used to plot the approximated function:
 			if SAVE_FIG:
-				x_range = np.arange(0, 1, 0.01)
-				y_range = np.arange(0, 1, 0.01)
-				x_grid, y_grid = np.meshgrid(x_range, y_range)
-				input_data = []
-				for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-					input_data.append([x1, x2])
-				input_data = np.array(input_data)
-				z_value = np.array(mlp.predict(sess, input_data))
-				z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 				filename = "MLP_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-				utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+				plot_approximated_function(mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
 			
 			# Update best_mlp:
 			if test_error < best_test_error:
@@ -132,17 +123,8 @@ if TEST_RBFN:
 			
 			# Generate data to evaluate, used to plot the approximated function:
 			if SAVE_FIG:
-				x_range = np.arange(0, 1, 0.01)
-				y_range = np.arange(0, 1, 0.01)
-				x_grid, y_grid = np.meshgrid(x_range, y_range)
-				input_data = []
-				for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
-					input_data.append([x1, x2])
-				input_data = np.array(input_data)
-				z_value = np.array(rbfn.predict(sess, input_data))
-				z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 				filename = "RBFN_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-				utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+				plot_approximated_function(rbfn, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
 		
 			# Update best_rbfn:
 			if test_error < best_test_error:

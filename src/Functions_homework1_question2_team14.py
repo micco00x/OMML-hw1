@@ -27,3 +27,15 @@ def generate_RBFN(X, C, phi):
 	G = phi(np.linalg.norm(X - C, axis=2))
 
 	return G
+
+	
+	
+def plot_approximated_function(regr, x_range, y_range, filename):
+	x_grid, y_grid = np.meshgrid(x_range, y_range)
+	input_data = []
+	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
+		input_data.append([x1, x2])
+	input_data = np.array(input_data)
+	z_value = np.array(regr(input_data))
+	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
+	utils.plot_3d(x_grid, y_grid, z_grid, filename)
