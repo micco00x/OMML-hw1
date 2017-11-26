@@ -12,6 +12,10 @@ TEST_RBFN = True
 # Save figures:
 SAVE_FIG = False
 
+# Generate dataset:
+X, Y = utils.generate_franke_dataset()
+X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
+
 # Question 1 - Exercise 1: Multi-Layer Perceptron
 if TEST_MLP:
 	print("########################################################################")
@@ -30,10 +34,6 @@ if TEST_MLP:
 	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
 	for idx, rho in enumerate(RHO):
 		assert 1e-5 <= rho and rho <= 1e-3, "RHO[" + str(idx) + "] must be between 1e-5 and 1e-3"
-
-	# Generate dataset:
-	X, Y = utils.generate_franke_dataset()
-	X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
 
 	best_test_error = float("inf")
 
@@ -104,10 +104,6 @@ if TEST_RBFN:
 		assert 1e-5 <= rho and rho <= 1e-3, "RHO[" + str(idx) + "] must be between 1e-5 and 1e-3"
 	for idx, sigma in enumerate(SIGMA):
 		assert sigma > 0, "SIGMA[" + str(idx) + "] must be greater than 0"
-
-	# Generate dataset:
-	X, Y = utils.generate_franke_dataset()
-	X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
 
 	best_test_error = float("inf")
 

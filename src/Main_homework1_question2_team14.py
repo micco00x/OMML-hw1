@@ -8,6 +8,10 @@ from Functions_homework1_question2_team14 import generate_MLP, generate_RBFN
 TEST_MLP = True
 TEST_RBFN = True
 
+# Generate dataset:
+X, Y = utils.generate_franke_dataset()
+X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
+
 # Question 2 - Exercise 1: Multi-Layer Perceptron
 if TEST_MLP:
 	print("########################################################################")
@@ -23,10 +27,6 @@ if TEST_MLP:
 
 	# Double check hparams:
 	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
-
-	# Generate dataset:
-	X, Y = utils.generate_franke_dataset()
-	X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
 
 	# g activation function as specified in Q1E1:
 	g = lambda t: (1-np.exp(-sigma*t))/(1+np.exp(-sigma*t))
@@ -86,10 +86,6 @@ if TEST_RBFN:
 
 	# Double check hparams:
 	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
-
-	# Generate dataset:
-	X, Y = utils.generate_franke_dataset()
-	X_train, Y_train, X_test, Y_test = utils.split_dataset(X, Y, test_size=TEST_SIZE)
 
 	# Select the centers randomly (TODO: use clustering):
 	#C = np.take(X_train, np.random.choice(range(X_train.shape[0]), N), axis=0)
