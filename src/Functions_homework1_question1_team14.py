@@ -1,5 +1,7 @@
 import tensorflow as tf
+import numpy as np
 import itertools
+import utils
 import time
 
 # Multi-layer Perceptron:
