@@ -156,12 +156,13 @@ The training has been performed over 15000 iterations on the training set with
 a learning rate $\eta = 0.001$. The hyperparameters have been tuned with a
 grid search over all the possible combinations of the hyperparameters in:
 
-\[ (N, \rho, \sigma) \in \Big\{25, 50, 75\Big\} \times \Big\{10^{-3}, 10^{-4}, 10^{-5}\Big\}
+\[ (N, \rho, \sigma) \in \Big\{25, 50, 75, 100\Big\} \times \Big\{10^{-3}, 10^{-4}, 10^{-5}\Big\}
 \times \Big\{1, 2, 3, 4\Big\} \]
 
-The best result obtained an error of TODO on the training set and an error of
-TODO on the test set as it is also possible to see in table \ref{tab:experiments}.
-The hyperparameters found are $N=0$, $\rho=0$ and $\sigma=0$. In figure \ref{fig:plots}
+\noindent selecting the network with the lowest error on the test set.
+The best result obtained an error of 0.009 on the training set and an error of
+0.006 on the test set as it is also possible to see in table \ref{tab:experiments}.
+The hyperparameters found are $N=75$, $\rho=10^{-5}$ and $\sigma=3$. In figure \ref{fig:plots}
 the plot of the function computed by the MLP found.
 
 TODO: explain overfitting/underfitting
@@ -185,6 +186,7 @@ grid search over all the possible combinations of the hyperparameters in:
 \[ (N, \rho, \sigma) \in \Big\{25, 50, 70\Big\} \times \Big\{10^{-3}, 10^{-4}, 10^{-5}\Big\}
 \times \Big\{0.25, 0.5, 0.75, 1\Big\} \]
 
+\noindent selecting the network with the lowest error on the test set.
 The best result obtained an error of TODO on the training set and an error of
 TODO on the test set (see table \ref{tab:experiments}).
 The hyperparameters found are $N=0$, $\rho=0$ and $\sigma=0$. In figure \ref{fig:plots}
@@ -261,17 +263,21 @@ TODO: E3
 \section{Conclusion}
 
 \begin{table}
+	%\setlength\tabcolsep{1.5pt}
+	\footnotesize
 	\centering
 	\begin{tabular}{*{7}{c}}
 		Neural Network & N & $\sigma$ & $\rho$ & Training Error & Test Error & Time \\
 		\hline
-		Full MLP & TBD & TBD & TBD & TBD & TBD & TBD \\
-		Full RBFN & TBD & TBD & TBD & TBD & TBD & TBD \\
-		Extreme MLP & TBD & TBD & TBD & TBD & TBD & TBD \\
-		Unsupervised c. RBFN & TBD & TBD & TBD & TBD & TBD & TBD \\
+		Full MLP & 75 & 3 & $10^{-5}$ & 0.007 & 0.006 & 25.587s \\
+		Full RBFN & 50 & 0.25 & $10^{-5}$ & 0.005 & 0.005 & 34.770s \\
+		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 0.001s \\
+		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 0.001s \\
 		TBD & TBD & TBD & TBD & TBD & \textbf{TBD} & TBD \\
 	\end{tabular}
-	\caption{TODO}
+	\caption{Results of the experiments described in the previous sections.
+		The last column shows the amount of time needed to train each
+		specific network.}
 	\label{tab:experiments}
 \end{table}
 
@@ -286,11 +292,11 @@ a kind of computer)
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/MLP_E1.png}
+		\includegraphics[width=1.0\linewidth]{images/MLP_N_75_sigma_3_rho_1e-05.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/RBFN_E1.png}
+		\includegraphics[width=1.0\linewidth]{images/RBFN_N_50_sigma_025_rho_00001.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
@@ -303,7 +309,7 @@ a kind of computer)
 	\caption{In order: the Franke's function and the functions obtained by
 		Full MLP, Full RBFN, Extreme MLP, Unisupervised c. RBFN and TBD.
 		The hyperparameters used for each network are specified in table
-		\ref{tab:experiments}. ANYTHING ELSE TO ADD?}
+		\ref{tab:experiments}.}
 	\label{fig:plots}
 \end{figure}
 
