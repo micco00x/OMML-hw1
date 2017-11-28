@@ -2,7 +2,8 @@ import tensorflow as tf
 import numpy as np
 import utils
 
-from Functions_homework1_question1_team14 import MLP, RBFN, hyperparameters_tuning, plot_approximated_function
+from Functions_homework1_question1_team14 import MLP, RBFN
+from Functions_homework1_question1_team14 import hyperparameters_tuning, plot_approximated_function, write_results_on_file
 
 # Debug MLP and RBFN:
 TEST_MLP = True
@@ -22,7 +23,7 @@ if TEST_MLP:
 	print("######################## Multi-Layer Perceptron ########################")
 	print("########################################################################")
 
-	# hparams:
+	# hparams (used in gridsearch):
 	EPOCHS = 2
 	HIDDEN = [25, 50, 75]
 	ETA = 1e-3
@@ -46,7 +47,7 @@ if TEST_MLP:
 		best_mlp = MLP(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
 		
 		# Training
-		best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS)
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS)
 		
 		# Evalation
 		best_test_error = best_mlp.evaluate(sess, X_test, Y_test)
@@ -54,6 +55,9 @@ if TEST_MLP:
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_mlp:", best_mlp.hidden_layer_size, best_mlp.sigma, best_mlp.rho)
+		
+		with open("output_homework1_team14.txt","a") as output:
+			write_results_on_file(output, "This is homework 1: question 1.1", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)
 
 		
 # Question 1 - Exercise 2: Radial Basis Function Network
@@ -62,7 +66,7 @@ if TEST_RBFN:
 	print("#################### Radial Basis Function Network #####################")
 	print("########################################################################")
 
-	# hparams:
+	# hparams (used in gridsearch):
 	TEST_SIZE = 0.3
 	EPOCHS = 2
 	HIDDEN = [25, 50, 70]
@@ -91,7 +95,7 @@ if TEST_RBFN:
 		best_rbfn = RBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
 		
 		# Training
-		best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS)
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS)
 		
 		# Evalation
 		best_test_error = best_rbfn.evaluate(sess, X_test, Y_test)
@@ -99,3 +103,6 @@ if TEST_RBFN:
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_rbfn:", best_rbfn.hidden_layer_size, best_rbfn.sigma, best_rbfn.rho)
+		
+		with open("output_homework1_team14.txt","a") as output:
+			write_results_on_file(output, "This is homework 1: question 1.2", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)

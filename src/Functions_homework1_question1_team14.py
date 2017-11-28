@@ -1,5 +1,6 @@
 import tensorflow as tf
 import itertools
+import time
 
 # Multi-layer Perceptron:
 class MLP:
@@ -29,6 +30,8 @@ class MLP:
 
 	# Train the MLP on the dataset for a specified number of epochs:
 	def train(self, sess, X_train, Y_train, epochs, verbose=False):
+		time0 = time.time()
+		
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
 			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
@@ -36,6 +39,9 @@ class MLP:
 				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 		if verbose:
 			print("")
+		
+		training_computing_time = time.time() - time0
+		return training_computing_time, 0, 0
 
 	# Evaluate the MLP on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -72,6 +78,8 @@ class RBFN:
 
 	# Train the RBFN on the dataset for a specified number of epochs:
 	def train(self, sess, X_train, Y_train, epochs, verbose=False):
+		time0 = time.time()
+		
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
 			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
@@ -79,6 +87,9 @@ class RBFN:
 				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 		if verbose:
 			print("")
+		
+		training_computing_time = time.time() - time0
+		return training_computing_time, 0, 0
 
 	# Evaluate the RBFN on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -90,9 +101,7 @@ class RBFN:
 
 		
 
-
 def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False):
-	
 	best_test_error = float("inf")
 	
 	for hparams in itertools.product(*[HIDDEN, SIGMA, RHO]):
@@ -131,8 +140,6 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 		
 		
 		
-		
-
 def plot_approximated_function(regr, session, x_range, y_range, filename):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
@@ -142,3 +149,13 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+	
+	
+	
+def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
+	output.write(title)
+	output.write("\nTest MSE," + "%f" % MSE)
+	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
+	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
+	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)
+	
