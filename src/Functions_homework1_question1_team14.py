@@ -101,8 +101,10 @@ class RBFN:
 	def predict(self, sess, X):
 		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
 
-
-
+# Tuning of hyperparameters, returns the best model found with the relative
+# hyperparameters, the error on the test set, the total time to perform
+# the search, the number of function evaluations and the number of
+# gradient evaluations:
 def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False):
 	best_test_error = float("inf")
 
@@ -121,7 +123,7 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 
 		# Define the Model, train and evaluate on training and test sets:
 		model = Model_class(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
-		model.train(sess, X_train, Y_train, EPOCHS, True)
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = model.train(sess, X_train, Y_train, EPOCHS, True)
 		training_error = model.evaluate(sess, X_train, Y_train)
 		test_error = model.evaluate(sess, X_test, Y_test)
 		print("Training error: %g" % training_error)
@@ -137,11 +139,11 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 			best_test_error = test_error
 			best_hparams = hparams
 			best_model = model
+			best_training_computing_time, best_num_function_evaluations, best_num_gradient_evaluations = (training_computing_time, num_function_evaluations, num_gradient_evaluations)
 
-	return best_model, best_hparams, best_test_error
+	return best_model, best_hparams, best_test_error, best_training_computing_time, best_num_function_evaluations, best_num_gradient_evaluations
 
-
-
+# Plot the function represented by the network regr on a range x_range x y_range:
 def plot_approximated_function(regr, session, x_range, y_range, filename):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
@@ -151,12 +153,3 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
-
-
-
-def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
-	output.write(title)
-	output.write("\nTest MSE," + "%f" % MSE)
-	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
-	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
-	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)

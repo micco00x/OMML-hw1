@@ -1,12 +1,19 @@
 import numpy as np
 import sklearn
 from sklearn import cluster
+import time
 import utils
 
 from Functions_homework1_question2_team14 import generate_MLP, generate_RBFN, plot_approximated_function
 
 TEST_MLP = True
 TEST_RBFN = True
+
+TEST_SIZE = 0.3
+N_EXPERIMENTS = 10000
+
+# Double check hparams:
+assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
 
 # Generate dataset:
 X, Y = utils.generate_franke_dataset()
@@ -19,14 +26,9 @@ if TEST_MLP:
 	print("########################################################################")
 
 	# hparams:
-	N_EXPERIMENTS = 10000
-	TEST_SIZE = 0.3
-	N = 50
-	sigma = 2
+	N = 75
+	sigma = 3
 	rho = 1e-5
-
-	# Double check hparams:
-	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
 
 	# g activation function as specified in Q1E1:
 	g = lambda t: (1-np.exp(-sigma*t))/(1+np.exp(-sigma*t))
@@ -34,6 +36,8 @@ if TEST_MLP:
 
 	best_training_error = float("inf")
 	best_test_error = float("inf")
+
+	time0 = time.time()
 
 	for _ in range(N_EXPERIMENTS):
 		G, W, b = generate_MLP(X_train, N, g)
@@ -55,8 +59,9 @@ if TEST_MLP:
 			best_training_error = training_error
 			best_test_error = test_error
 			best_mlp = f
-	
-	best_mlp, best_training_error, best_test_error = 
+
+	training_computing_time = time.time() - time0
+	avg_training_time = training_computing_time / N_EXPERIMENTS
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
@@ -64,6 +69,9 @@ if TEST_MLP:
 	# Generate data to evaluate, used to plot the approximated function:
 	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning")
 
+	# Update output file:
+	with open("output_homework1_team14.txt","a") as output:
+		utils.write_results_on_file(output, "This is homework 1: question 2.1", best_test_error, avg_training_time, 1, 0)
 
 # Question 2 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
@@ -72,17 +80,11 @@ if TEST_RBFN:
 	print("########################################################################")
 
 	# hparams:
-	N_EXPERIMENTS = 10000
-	TEST_SIZE = 0.3
 	N = 50
-	sigma = 0.5
+	sigma = 0.25
 	rho = 1e-5
 
-	# Double check hparams:
-	assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
-
-	# Select the centers randomly (TODO: use clustering):
-	#C = np.take(X_train, np.random.choice(range(X_train.shape[0]), N), axis=0)
+	# Select the centers using K-means clustering:
 	C = sklearn.cluster.KMeans(n_clusters=N).fit(X_train).cluster_centers_
 
 	# phi activation function as specified in Q1E2:
@@ -91,6 +93,8 @@ if TEST_RBFN:
 
 	best_training_error = float("inf")
 	best_test_error = float("inf")
+
+	time0 = time.time()
 
 	for _ in range(N_EXPERIMENTS):
 		G = generate_RBFN(X_train, C, phi)
@@ -115,9 +119,15 @@ if TEST_RBFN:
 			best_test_error = test_error
 			best_rbfn = f
 
+	training_computing_time = time.time() - time0
+	avg_training_time = training_computing_time / N_EXPERIMENTS
+
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
 
 	# Generate data to evaluate, used to plot the approximated function:
 	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning")
-	
+
+	# Update output file:
+	with open("output_homework1_team14.txt","a") as output:
+		utils.write_results_on_file(output, "This is homework 1: question 2.2", best_test_error, avg_training_time, 1, 0)

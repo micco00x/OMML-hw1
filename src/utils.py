@@ -29,7 +29,7 @@ def generate_franke_dataset(dataset_size=100):
 	X = np.random.rand(dataset_size, 2)
 	Y = franke2d(X[:,0], X[:,1]) + (np.random.rand(dataset_size) / 5 - 0.1)
 	#Y = np.reshape(Y, (Y.shape[0], 1))
-	
+
 	return X, Y
 
 # Utility function to plot Franke's function:
@@ -82,3 +82,10 @@ def scatterplot_3d(X, Y, Z):
 
 	plt.close()
 
+# Update the file with the results as specified in the assignment:
+def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
+	output.write(title)
+	output.write("\nTest MSE," + "%f" % MSE)
+	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
+	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
+	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)
