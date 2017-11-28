@@ -81,3 +81,4 @@ def scatterplot_3d(X, Y, Z):
 	plt.show()
 
 	plt.close()
+
