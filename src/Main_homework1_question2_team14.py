@@ -55,6 +55,8 @@ if TEST_MLP:
 			best_training_error = training_error
 			best_test_error = test_error
 			best_mlp = f
+	
+	best_mlp, best_training_error, best_test_error = 
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)

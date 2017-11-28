@@ -1,7 +1,10 @@
 import tensorflow as tf
+import itertools
 
 # Multi-layer Perceptron:
 class MLP:
+	name = "MLP"
+	
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
@@ -44,6 +47,8 @@ class MLP:
 
 # Radial Basis Function Network:
 class RBFN:
+	name = "RBFN"
+	
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
@@ -83,6 +88,49 @@ class RBFN:
 	def predict(self, sess, X):
 		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
 
+		
+
+
+def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False):
+	
+	best_test_error = float("inf")
+	
+	for hparams in itertools.product(*[HIDDEN, SIGMA, RHO]):
+		hidden_layer_size = hparams[0]
+		sigma = hparams[1]
+		rho = hparams[2]
+		
+		print("Training", Model_class.name, "with hparams:")
+		#print(" * TEST_SIZE:", TEST_SIZE)
+		print(" * EPOCHS:", EPOCHS)
+		print(" * HIDDEN:", hidden_layer_size)
+		print(" * eta:", ETA)
+		print(" * rho:", rho)
+		print(" * sigma:", sigma)
+
+		# Define the Model, train and evaluate on training and test sets:
+		model = Model_class(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
+		model.train(sess, X_train, Y_train, EPOCHS, True)
+		training_error = model.evaluate(sess, X_train, Y_train)
+		test_error = model.evaluate(sess, X_test, Y_test)
+		print("Training error: %g" % training_error)
+		print("Test error: %g" % test_error)
+		
+		# Generate data to evaluate, used to plot the approximated function:
+		if SAVE_FIG:
+			filename = Model_class.name + "_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
+			plot_approximated_function(model, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
+
+		# Update best_model:
+		if test_error < best_test_error:
+			best_test_error = test_error
+			best_hparams = hparams
+			best_model = model
+	
+	return best_model, best_hparams, best_test_error
+		
+		
+		
 		
 
 def plot_approximated_function(regr, session, x_range, y_range, filename):
