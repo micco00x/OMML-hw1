@@ -17,11 +17,12 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
-\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+%\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\documentclass[a4paper]{article}
 
 %\usepackage[options]{nohyperref}  % This makes hyperref commands do nothing without errors
 %\usepackage{url}  % This makes \url work
@@ -29,12 +30,13 @@
 
 \usepackage{graphicx}
 
-\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
-\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+%\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[utf8]{inputenc}
+%\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 
-\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+%\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 
 \usepackage{sectsty} % Allows customizing section commands
 \allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
@@ -75,9 +77,9 @@
 % To put images side by side:
 \usepackage{subcaption}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	TITLE SECTION
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
 
@@ -98,15 +100,15 @@
 
 \maketitle % Print the title
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Introduction}
 
 The aim of the homework is to train and compare different neural networks on a
 regression problem. In particular, the regression task is performed on the Franke's
 function, building a dataset from it by sampling 100 random points $(x^i, y^i)$ with noise,
-i.e. with $y^i = f(x^i) + \varepsilon^i$ where $\varepsilon^i$ is a random number in
-$[-10^{-1}, 10^{-1}]$ and $f$ is the Franke's function.
+i.e. with $y^i = F(x^i) + \varepsilon^i$ where $\varepsilon^i$ is a random number in
+$[-10^{-1}, 10^{-1}]$ and $F$ is the Franke's function.
 The dataset has been split into a training set (70\% of the dataset)
 and a test set (the remaining 30\%).
 
@@ -122,292 +124,196 @@ and then by solving a linear least squares problem. In the decomposition method
 the error is minimized by alternating a convex minimization w.r.t. the output
 weights and a non-convex minimization w.r.t. all the other weights.
 
-The project has been developed in Python with Tensorflow and Numpy for the
-learning algorithms and the computation of the tensors.
+The best result has been obtained with TODO, which has an error of \textbf{TODO}
+on the test set. The project has been developed in Python with TensorFlow and
+Numpy for the learning algorithms and the computation of the tensors.
 
-TODO: RESULTS.
-
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Full Minimization}
 
 As mentioned before, the full minimization is done by using the gradient
-descent method on the training error function (DEFINED ABOVE?).
+descent algorithm on the training error function, defined as:
+
+\[ E(\omega; \pi) = \frac{1}{2P} \displaystyle\sum_{p=1}^{P} \| f\big(x^p\big) - y^p \|^2
++ \rho \| \omega \|^2 \]
+
+\noindent where $\omega$ = ($v$, $w$, $b$) are the weights,
+$\pi$ = ($N$, $\rho$, $\sigma$) are the hyperparameters, $P$ is the dimension
+of the training set and $f$ is the function computed by the neural network.
 
 Let's consider a shallow MLP with linear output:
 
-DREBIN is a dataset of Android malwares developed to study machine learning
-approaches for malware detection. It's composed of 123,453 benign
-applications and 5,560 malwares where each program is represented by a set of features extracted from the
-manifest file of Android (\textit{AndroidManifest.xml}) and from the disassembled code
-of the application at runtime.
+\[ f(x) = \displaystyle\sum_{j=1}^{N} v_j g\left(\displaystyle\sum_{i=1}^{n}w_{ji}x_i - b_j\right) \]
 
-All the features are grouped in subsets. In particular,
-there are four groups from the manifest file:
+\noindent with $n$ dimension of the input, $N$ dimension of hidden layer, $v \in \mathbb{R}^N$
+weights from the hidden to the output layer and
+$g$ activation function, defined as:
 
-\begin{itemize}
-	\itemsep0em
-	\item $S_1$: \textit{Hardware components}
-	\item $S_2$: \textit{Requested permissions}
-	\item $S_3$: \textit{App components}
-	\item $S_4$: \textit{Filtered intents}
-\end{itemize}
+\[ g(t) = tanh\left(\frac{t}{2}\right) = \frac{1-e^{-\sigma t}}{1+e^{-\sigma t}} \]
 
-\noindent and four groups from the disassembled code:
+The training has been performed over 15000 iterations on the training set with
+a learning rate $\eta = 0.001$. The hyperparameters have been tuned with a
+grid search over all the possible combinations of the hyperparameters in:
 
-\begin{itemize}
-	\itemsep0em
-	\item $S_5$: \textit{Restricted API calls}
-	\item $S_6$: \textit{Used permissions}
-	\item $S_7$: \textit{Suspicious API calls}
-	\item $S_8$: \textit{Network addresses}
-\end{itemize}
+\[ (N, \rho, \sigma) \in \Big\{25, 50, 75\Big\} \times \Big\{10^{-3}, 10^{-4}, 10^{-5}\Big\}
+\times \Big\{1, 2, 3, 4\Big\} \]
 
-Researches on DREBIN have shown that not only machine learning
-approaches outperform most common anti-virus scanners, but that it's also
-possible to analyze a program directly on the smartphone with an average of
-10 seconds\cite{drebin-paper}. This promising results make malware analysis
-worth studying and set up the basis for improvements in the future.
+The best result obtained an error of TODO on the training set and an error of
+TODO on the test set as it is also possible to see in table \ref{tab:experiments}.
+The hyperparameters found are $N=0$, $\rho=0$ and $\sigma=0$. In figure \ref{fig:plots}
+the plot of the function computed by the MLP found.
 
-%----------------------------------------------------------------------------------------
+TODO: explain overfitting/underfitting
+
+An analogous experiment has been done with the radial basis function network,
+defined as:
+
+\[ f(x) = \displaystyle\sum_{j=1}^{N} v_j \phi(\| x^i - c_j \|) \]
+
+where $c_j \in \mathbb{R}^2$ is the center of the j-th hidden neuron,
+$v \in \mathbb{R}^N$ weights from the hidden to the output layer and $\phi$
+is the activation function, defined as:
+
+\[ \phi(\|x - c_j\|) = e^{-(\| x - c_j \|/\sigma)^2} \]
+
+\noindent with $\sigma > 0$.
+The training has been performed over 15000 iterations on the training set with
+a learning rate $\eta = 0.001$. The hyperparameters have been tuned with a
+grid search over all the possible combinations of the hyperparameters in:
+
+\[ (N, \rho, \sigma) \in \Big\{25, 50, 70\Big\} \times \Big\{10^{-3}, 10^{-4}, 10^{-5}\Big\}
+\times \Big\{0.25, 0.5, 0.75, 1\Big\} \]
+
+The best result obtained an error of TODO on the training set and an error of
+TODO on the test set (see table \ref{tab:experiments}).
+The hyperparameters found are $N=0$, $\rho=0$ and $\sigma=0$. In figure \ref{fig:plots}
+the plot of the function computed by the RBFN found.
+
+As already said before, both training procedures for MLP and RBFN have been
+performed using the gradient descent algorithm for 15000 iterations with a
+learning rate $\eta = 0.001$. This step has been implemented with TensorFlow's
+gradient descent optimizer, defined in \texttt{tf.train.GradientDescentOptimizer}.
+For each hyperparameter setting the training took 0.00s for the MLP and 0.00s
+for the RBFN on average.
+
+TODO: explain overfitting/underfitting
+
+TODO: MLP vs RBFN
+
+%-------------------------------------------------------------------------------
 
 \section{Two Blocks Method}
-\label{section:preprocessing}
 
-In order to make it possible to train the classifiers on the dataset, all the
-data needs to be preprocessed. As done in \cite{drebin-paper} the features of
-each application are embedded into a vector space. Each element of the vectors
-can be either 1 or 0 and describes the presence of a feature in a program
-(e.g. \texttt{android.hardware.wifi}, \texttt{SEND\_SMS}).
+The idea, here, is to train the network by first setting up a subset of weights
+and then by solving efficiently the least squares problem obtained. This
+speeds up the training of the network obtaining (similar?) results w.r.t the
+previous section.
 
-To speed up the training phase only a subset of features and a subset of
-applications have been considered. In particular
-subgroups $S_1$, $S_3$ and $S_8$ have been discarded and a subset of 9,567
-applications have been used to train the classifiers.
+For what regards the MLP all the weights $w_{ji}$ and the biases $b_j$, with
+$j \in \{ 1, ..., N \} $ and $i \in \{ 1, ..., n \} $, have been set up
+randomly. This reduces the minimization problem to the solution of:
 
-This made it possible to embed the features in a vector space of dimension 1,773
-against 545,000 used in the paper.
+\begin{equation}
+ 	\label{eq:min-nabla-v}
+	\nabla_v E(\omega; \pi) = 0
+\end{equation}
 
-%----------------------------------------------------------------------------------------
+\noindent where the hyperparameters $\pi$ are the values found in the previous
+section. Hence, the problem becomes a simple linear system:
+
+\[ \left( \frac{1}{2P} G^T G + \rho I \right) v = \frac{1}{2P} G^T y \]
+
+\noindent where $G \in \mathbb{R}^{P \times N}$ is defined as:
+
+\[ G_{rc} = g\left( \sum_{i=1}^{n} w_{ci}x_i^r - b_c \right) \]
+
+This method has been performed 10000 times obtaining an error of TODO on the
+training set and an error of TODO on the test set (table \ref{tab:experiments}). In figure
+\ref{fig:plots} the plot of the function computed by the MLP found.
+
+TODO: COMPARISON WITH Q1E1
+
+An analogous procedure has been applied to RBFN.
+The centers $c_j$, with $ j \in \{ 1,  ..., N \} $ have been selected by
+using the K-means clustering algorithm. This allowed, as before, to reduce the
+problem to the solution of equation \ref{eq:min-nabla-v}. The hyperparameters
+are the ones found in the previous section. Here G is defined as:
+
+\[ G_{ij} = \phi\left( \| x^i - c_j \| \right) \]
+
+This method has been performed 10000 times obtaining an error of TODO on the
+training set and an error of TODO on the test set (table \ref{tab:experiments}). In figure
+\ref{fig:plots} the plot of the function computed by the RBFN found.
+
+TODO: COMPARISON WITH Q1E2
+
+TODO: implementation of both MLP and RBFN
+
+%-------------------------------------------------------------------------------
 
 \section{Decomposition Method}
 
-The first classifier trained is the decision tree. The idea behind this kind of
-classifier is simple: exploit the data in order to learn simple decision rules.
-Rules depend on the features of the data, which are represented in this case by
-a multi-dimensional vector, and are used to understand the category of each input.
+TODO: E3
 
-Different decision trees have been trained and compared varying the maximum
-depth of the trees themselves, as it is possible to see from table \ref{tab:experiments}.
-Increasing the depth of the tree seems to improve the behaviour of the classifier,
-but it's important to remember that in these experiments only a small subset of
-the whole dataset has been used. This makes it simpler to create rules that
-split the two classes.
-
-Probably the most interesting aspect of decision trees is that it's easy to
-understand its behaviour just by seeing the generated rules. Taking as an example
-the decision tree with maximum depth 3 (figure \ref{fig:decision-tree-maxdepth-3}),
-the rules generated consider the following features:
-
-\begin{itemize}
-	\itemsep0em
-	\item \texttt{X[489]: intent::android.intent.action.BOOT\_COMPLETED}
-	\item \texttt{X[1360]: permission::android.permission.SEND\_SMS}
-	\item \texttt{X[1336]: permission::android.permission.READ\_PHONE\_STATE}
-	\item \texttt{X[394]: call::getSubscriberId}
-	\item \texttt{X[75]: api\_call::android/content/Context;->startActivity}
-	\item \texttt{X[742]: intent::android.intent.action.SIG\_STR}
-	\item \texttt{X[839]: intent::android.intent.category.DEFAULT}
-\end{itemize}
-
-\noindent which suggests that most malwares (or viceversa most benign applications)
-needs to be executed directly after the booting of the smartphone, to send SMS or
-to access to the state of the phone.
-
-%\begin{figure}
-%	\includegraphics[width=1.0\linewidth]{images/decision-tree-maxdepth-3.png}
-%	\caption{Decision tree with \texttt{max\_depth=3}.}
-%	\label{fig:decision-tree-maxdepth-3}
-%\end{figure}
-
-%\begin{figure}
-%	\centering
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/DecisionTree-max_depth1.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/DecisionTree-max_depth3.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/DecisionTree-max_depth5.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/DecisionTree-max_depth10.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/DecisionTree-max_depthNone.png}
-%	\end{subfigure}
-%	\caption{Confusion matrices of the decision tree classifiers with respective max
-%		depth of 1, 3, 5, 10, None.}
-%	\label{fig:cm-dt}
-%\end{figure}
-
-%----------------------------------------------------------------------------------------
-
-\section{Conclusion}
-
-The second tested classifier is Na\"ive Bayes, which exploits the Bayes' Theorem
-and the frequency of the data contained in the dataset to compute the likelihood
-of a sample to be, in this case, a malware (or viceversa a benign application).
-
-The Na\"ive Bayes classifier used makes use of Laplace smoothing, which is a
-technique used to smooth probabilities. The training was made by varying the
-smoothing parameter $\alpha$ in order to try to improve the accuracy. As it is
-possible to see from table \ref{tab:experiments} adding a smoothing parameter
-seems to slightly decrease the performances of the classifier.
-
-%\begin{figure}
-%	\centering
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/NaiveBayes-alpha0.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/NaiveBayes-alpha05.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/NaiveBayes-alpha10.png}
-%	\end{subfigure}
-%	\caption{Confusion matrices of the na\"ive bayes classifiers with respective
-%		smoothing parameter $alpha$ 0.0, 0.5, 1.0.}
-%	\label{fig:cm-nb}
-%\end{figure}
-
-%----------------------------------------------------------------------------------------
-
-\section{Support Vector Machine}
-
-The idea behind Support Vector Machines (SVMs) is to construct a set of hyperplanes that
-split the data with the largest possible margin (distance between the hyperplane
-and the nearest sample in the training set). SVMs are built upon kernel functions,
-which implicitly map the samples to a high-dimensional space.
-
-Here SVMs have been training using different kernel functions, as shown in
-table \ref{tab:experiments}. It's interesting to notice that SVM with linear kernel
-performs better than the one with kernel based on radial basis function. This
-could be due to the fact that the dataset is smaller and the vector space dimension
-has been reduced a lot to reduce training time.
-
-%\begin{figure}
-%	\centering
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/SupportVectorMachine-kernellinear.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/SupportVectorMachine-kernelpoly.png}
-%	\end{subfigure}
-%	\vskip\baselineskip
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/SupportVectorMachine-kernelrbf.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/SupportVectorMachine-kernelsigmoid.png}
-%	\end{subfigure}
-%	\caption{Confusion matrices of the SVM classifiers with respective
-%		kernel function linear, poly, rbf and sigmoid.}
-%	\label{fig:cm-svm}
-%\end{figure}
-
-%----------------------------------------------------------------------------------------
-
-\section{Multi-Layer Perceptron}
-
-The last tested classifier is the multi-layer perceptron (MLP), which is a
-feedforward artificial neural network consisting of three or more layers (one
-input layer, one output layer and multiple hidden layers in between).
-
-Two different MLPs have been tested on DREBIN obtaining both good results. The
-first MLP has been trained using SGD algorithm with momentum ($\beta=0.9$) while the second
-one has been trained using Adam. Both used $ReLU$ as non-linear activation
-function, a constant learning rate $\eta=0.001$
-and a maximum number of iterations of 400.
-The second MLP obtained the best results in all the measures, outperforming
-all the previous classifiers, as shown in table \ref{tab:experiments}.
-
-%\begin{figure}
-%	\centering
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/Multi-layerPerceptron-solversgd.png}
-%	\end{subfigure}
-%	\begin{subfigure}{.32\textwidth}
-%		\centering
-%		\includegraphics[width=1.0\linewidth]{images/Multi-layerPerceptron-solveradam.png}
-%	\end{subfigure}
-%	\caption{Confusion matrices of the MLP classifiers with respective
-%		solver SGD and Adam.}
-%	\label{fig:cm-nb}
-%\end{figure}
-
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Conclusion}
 
 \begin{table}
 	\centering
 	\begin{tabular}{*{7}{c}}
-		Classifier & hparams & Acc. & Prec. & Rec. & F1 & FPR \\
+		Neural Network & N & $\sigma$ & $\rho$ & Training Error & Test Error & Time \\
 		\hline
-		Decision Tree & \texttt{max\_depth=1} & 0.788 & 0.886 & 0.675 & 0.767 & 0.092 \\
-		Decision Tree & \texttt{max\_depth=3} & 0.888 & 0.905 & 0.876 & 0.890 & 0.098 \\
-		Decision Tree & \texttt{max\_depth=5} & 0.925 & 0.918 & 0.939 & 0.928 & 0.090 \\
-		Decision Tree & \texttt{max\_depth=10} & 0.948 & 0.942 & 0.959 & 0.950 & 0.063 \\
-		Decision Tree & \texttt{max\_depth=None} & 0.950 & 0.945 & 0.960 & 0.952 & 0.059 \\
-		Na\"ive Bayes & $\alpha=0.0$ & 0.884 & 0.913 & 0.857 & 0.884 & 0.088 \\
-		Na\"ive Bayes & $\alpha=0.5$ & 0.876 & 0.903 & 0.851 & 0.876 & 0.097 \\
-		Na\"ive Bayes & $\alpha=1.0$ & 0.875 & 0.901 & 0.851 & 0.876 & 0.099 \\
-		SVM & \texttt{kernel=linear} & 0.959 & 0.960 & 0.961 & 0.960 & 0.043 \\
-		SVM & \texttt{kernel=poly} & 0.484 & 0.000 & 0.000 & 0.000 & 0.000 \\
-		SVM & \texttt{kernel=rbf} & 0.925 & 0.945 & 0.907 & 0.926 & 0.056 \\
-		SVM & \texttt{kernel=sigmoid} & 0.908 & 0.938 & 0.880 & 0.908 & 0.062 \\
-		MLP & \texttt{solver=sgd} & 0.959 & 0.960 & 0.960 & 0.960 & 0.042 \\
-		MLP & \texttt{solver=adam} & \textbf{0.969} & \textbf{0.970} & \textbf{0.970} & \textbf{0.970} & \textbf{0.032} \\
+		Full MLP & TBD & TBD & TBD & TBD & TBD & TBD \\
+		Full RBFN & TBD & TBD & TBD & TBD & TBD & TBD \\
+		Extreme MLP & TBD & TBD & TBD & TBD & TBD & TBD \\
+		Unsupervised c. RBFN & TBD & TBD & TBD & TBD & TBD & TBD \\
+		TBD & TBD & TBD & TBD & TBD & \textbf{TBD} & TBD \\
 	\end{tabular}
-	\caption{All the experiments performed on DREBIN showing the type of classifier,
-		the hyperparameters, the accuracy, the precision, the recall, the F1-score
-		and the false positive rate (FPR).}
+	\caption{TODO}
 	\label{tab:experiments}
 \end{table}
 
-Multiple experiments have been conducted on DREBIN dataset showing that
-machine learning methods are able to generalize the data and classify malware
-applications based on their features. Of course, all the experiments are
-simplified by the fact that the amount of samples used are only a part of the
-whole dataset. Future experiments could make use of deep learning, trying to
-optimize the hyperparameters of the MLP, increasing the number of layers,
-changing the activation functions and making use of the whole dataset. The use
-of GPUs should make the training much faster, optimizing computation of the matrices
-and performing the forward and the backward step with a larger number of
-samples altogether.
+Conclusion. (Remember to say that all experiments have been performed on
+a kind of computer)
 
-%----------------------------------------------------------------------------------------
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.32\textwidth}
+		\centering
+		\includegraphics[width=1.0\linewidth]{images/franke.png}
+	\end{subfigure}
+	\begin{subfigure}{.32\textwidth}
+		\centering
+		\includegraphics[width=1.0\linewidth]{images/MLP_E1.png}
+	\end{subfigure}
+	\begin{subfigure}{.32\textwidth}
+		\centering
+		\includegraphics[width=1.0\linewidth]{images/RBFN_E1.png}
+	\end{subfigure}
+	\begin{subfigure}{.32\textwidth}
+		\centering
+		\includegraphics[width=1.0\linewidth]{images/MLP_Extreme_Learning.png}
+	\end{subfigure}
+	\begin{subfigure}{.32\textwidth}
+		\centering
+		\includegraphics[width=1.0\linewidth]{images/RBFN_Extreme_Learning.png}
+	\end{subfigure}
+	\caption{In order: the Franke's function and the functions obtained by
+		Full MLP, Full RBFN, Extreme MLP, Unisupervised c. RBFN and TBD.
+		The hyperparameters used for each network are specified in table
+		\ref{tab:experiments}. ANYTHING ELSE TO ADD?}
+	\label{fig:plots}
+\end{figure}
 
-\newpage
-\bibliography{bibliography}
-\bibliographystyle{ieeetr}
+%-------------------------------------------------------------------------------
 
-%----------------------------------------------------------------------------------------
+%\newpage
+%\bibliography{bibliography}
+%\bibliographystyle{ieeetr}
+
+%-------------------------------------------------------------------------------
 
 \end{document}
 \grid
