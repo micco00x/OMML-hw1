@@ -10,7 +10,10 @@ TEST_MLP = True
 TEST_RBFN = True
 
 # Save figures:
-SAVE_FIG = False
+SAVE_FIG = True
+
+# Train the networks:
+TRAIN_MODE = True
 
 # Generate dataset:
 TEST_SIZE = 0.3
@@ -24,12 +27,12 @@ if TEST_MLP:
 	print("########################################################################")
 
 	# hparams (used in gridsearch):
-	EPOCHS = 2
+	EPOCHS = 15000
 	HIDDEN = [25, 50, 75]
 	ETA = 1e-3
 	RHO = [1e-3, 1e-4, 1e-5]
 	SIGMA = [1, 2, 3, 4]
-	
+
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
 	best_hparams = (50, 2, 1e-5)
 
@@ -40,26 +43,27 @@ if TEST_MLP:
 
 	with tf.Session() as sess:
 		## Hyperparameters tuning: (we already have the best params)
-		best_mlp, best_hparams, best_test_error = hyperparameters_tuning(sess, MLP, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS)
+		if TRAIN_MODE:
+			best_mlp, best_hparams, best_test_error = hyperparameters_tuning(sess, MLP, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG)
 		(hidden_layer_size, sigma, rho) = (best_hparams[0], best_hparams[1], best_hparams[2])
-		
+
 		# Best RBFN
 		best_mlp = MLP(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
-		
+
 		# Training
-		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS)
-		
-		# Evalation
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+
+		# Evaluation
 		best_test_error = best_mlp.evaluate(sess, X_test, Y_test)
 
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_mlp:", best_mlp.hidden_layer_size, best_mlp.sigma, best_mlp.rho)
-		
+
 		with open("output_homework1_team14.txt","a") as output:
 			write_results_on_file(output, "This is homework 1: question 1.1", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)
 
-		
+
 # Question 1 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
 	print("########################################################################")
@@ -68,12 +72,12 @@ if TEST_RBFN:
 
 	# hparams (used in gridsearch):
 	TEST_SIZE = 0.3
-	EPOCHS = 2
+	EPOCHS = 15000
 	HIDDEN = [25, 50, 70]
 	ETA = 1e-3
 	RHO = [1e-3, 1e-4, 1e-5]
 	SIGMA = [0.25, 0.5, 0.75, 1]
-	
+
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
 	best_hparams = (50, 0.5, 1e-5)
 
@@ -88,21 +92,22 @@ if TEST_RBFN:
 
 	with tf.Session() as sess:
 		## Hyperparameters tuning: (we already have the best params)
-		best_rbfn, best_hparams, best_test_error = hyperparameters_tuning(sess, RBFN, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS)
+		if TRAIN_MODE:
+			best_rbfn, best_hparams, best_test_error = hyperparameters_tuning(sess, RBFN, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG)
 		(hidden_layer_size, sigma, rho) = (best_hparams[0], best_hparams[1], best_hparams[2])
-		
+
 		# Best RBFN
 		best_rbfn = RBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
-		
+
 		# Training
-		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS)
-		
-		# Evalation
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+
+		# Evaluation
 		best_test_error = best_rbfn.evaluate(sess, X_test, Y_test)
 
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_rbfn:", best_rbfn.hidden_layer_size, best_rbfn.sigma, best_rbfn.rho)
-		
+
 		with open("output_homework1_team14.txt","a") as output:
 			write_results_on_file(output, "This is homework 1: question 1.2", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)

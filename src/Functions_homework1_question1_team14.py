@@ -5,12 +5,12 @@ import time
 # Multi-layer Perceptron:
 class MLP:
 	name = "MLP"
-	
+
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
 		self.rho = rho
-	
+
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
 		self.y_placeholder = tf.placeholder(tf.float32)
@@ -31,7 +31,7 @@ class MLP:
 	# Train the MLP on the dataset for a specified number of epochs:
 	def train(self, sess, X_train, Y_train, epochs, verbose=False):
 		time0 = time.time()
-		
+
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
 			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
@@ -39,9 +39,9 @@ class MLP:
 				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 		if verbose:
 			print("")
-		
+
 		training_computing_time = time.time() - time0
-		return training_computing_time, 0, 0
+		return training_computing_time, 0, epochs
 
 	# Evaluate the MLP on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -54,12 +54,12 @@ class MLP:
 # Radial Basis Function Network:
 class RBFN:
 	name = "RBFN"
-	
+
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
 		self.rho = rho
-	
+
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
 		self.y_placeholder = tf.placeholder(tf.float32)
@@ -79,7 +79,7 @@ class RBFN:
 	# Train the RBFN on the dataset for a specified number of epochs:
 	def train(self, sess, X_train, Y_train, epochs, verbose=False):
 		time0 = time.time()
-		
+
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
 			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
@@ -87,9 +87,9 @@ class RBFN:
 				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 		if verbose:
 			print("")
-		
+
 		training_computing_time = time.time() - time0
-		return training_computing_time, 0, 0
+		return training_computing_time, 0, epochs
 
 	# Evaluate the RBFN on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -99,16 +99,16 @@ class RBFN:
 	def predict(self, sess, X):
 		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
 
-		
+
 
 def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False):
 	best_test_error = float("inf")
-	
+
 	for hparams in itertools.product(*[HIDDEN, SIGMA, RHO]):
 		hidden_layer_size = hparams[0]
 		sigma = hparams[1]
 		rho = hparams[2]
-		
+
 		print("Training", Model_class.name, "with hparams:")
 		#print(" * TEST_SIZE:", TEST_SIZE)
 		print(" * EPOCHS:", EPOCHS)
@@ -124,7 +124,7 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 		test_error = model.evaluate(sess, X_test, Y_test)
 		print("Training error: %g" % training_error)
 		print("Test error: %g" % test_error)
-		
+
 		# Generate data to evaluate, used to plot the approximated function:
 		if SAVE_FIG:
 			filename = Model_class.name + "_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
@@ -135,11 +135,11 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 			best_test_error = test_error
 			best_hparams = hparams
 			best_model = model
-	
+
 	return best_model, best_hparams, best_test_error
-		
-		
-		
+
+
+
 def plot_approximated_function(regr, session, x_range, y_range, filename):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
@@ -149,13 +149,12 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
-	
-	
-	
+
+
+
 def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
 	output.write(title)
 	output.write("\nTest MSE," + "%f" % MSE)
 	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
 	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
 	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)
-	
