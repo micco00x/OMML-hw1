@@ -283,7 +283,7 @@ TODO: E3
 		Full RBFN & 50 & 0.25 & $10^{-5}$ & 0.005 & 0.005 & 34.770s \\
 		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 8.240s \\
 		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 7.200s \\
-		TBD & TBD & TBD & TBD & TBD & \textbf{TBD} & TBD \\
+		TBD & 50 & 0.25 & $10^{-5}$ & TBD & 0.007 & 0.513s \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
 		The last column shows the amount of time needed to train each
@@ -316,6 +316,10 @@ a kind of computer)
 		\centering
 		\includegraphics[width=1.0\linewidth]{images/RBFN_Extreme_Learning.png}
 	\end{subfigure}
+  \begin{subfigure}{.32\textwidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/RBFN_BLOCK_N_50_sigma_05_rho_1e-05.png}
+  \end{subfigure}
 	\caption{In order: the Franke's function and the functions obtained by
 		Full MLP, Full RBFN, Extreme MLP, Unisupervised c. RBFN and TBD.
 		The hyperparameters used for each network are specified in table
