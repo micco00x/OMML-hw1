@@ -160,12 +160,10 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{1, 2, 3, 4\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of 0.009 on the training set and an error of
+The best result obtained an error of 0.007 on the training set and an error of
 0.006 on the test set as it is also possible to see in table \ref{tab:experiments}.
 The hyperparameters found are $N=75$, $\rho=10^{-5}$ and $\sigma=3$. In figure \ref{fig:plots}
 the plot of the function computed by the MLP found.
-
-TODO: explain overfitting/underfitting
 
 An analogous experiment has been done with the radial basis function network,
 defined as:
@@ -187,21 +185,33 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{0.25, 0.5, 0.75, 1\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of TODO on the training set and an error of
+The best result obtained an error of 0.005 on the training set and an error of
 TODO on the test set (see table \ref{tab:experiments}).
-The hyperparameters found are $N=0$, $\rho=0$ and $\sigma=0$. In figure \ref{fig:plots}
+The hyperparameters found are $N=50$, $\rho=10^{-5}$ and $\sigma=0.25$. In figure \ref{fig:plots}
 the plot of the function computed by the RBFN found.
 
 As already said before, both training procedures for MLP and RBFN have been
 performed using the gradient descent algorithm for 15000 iterations with a
 learning rate $\eta = 0.001$. This step has been implemented with TensorFlow's
 gradient descent optimizer, defined in \texttt{tf.train.GradientDescentOptimizer}.
-For each hyperparameter setting the training took 0.00s for the MLP and 0.00s
-for the RBFN on average.
+The training of the best network found took 25.587s for the MLP and 34.770s for
+the RBFN.
 
-TODO: explain overfitting/underfitting
+Studying all the experiments by comparing the difference between the training
+and the error set and the plot of the functions it's possible to see when
+overfitting and underfitting happen. It's interesting to notice that for both
+MLP and RBFN overfitting never happens, in fact for all the tests the difference
+between the training and the test error is so small that can be neglected.
+On the other hand it's easy to have underfitting. This is due to the fact that
+the number of hidden neurons are not sufficient to make the network obtain a
+small error. Moreover, since the size of the training set is small, it's
+harder for the network the learn the Franke's function.
 
-TODO: MLP vs RBFN
+The RBFN performs slightly better than the MLP. The amount of time needed for
+the RBFN to train is higher than the MLP, but it's interesting to notice from the
+experiments that the former converges faster. This allows space for future
+improvements where the training phase could be reduced with early stopping or
+similar techniques.
 
 %-------------------------------------------------------------------------------
 
@@ -209,7 +219,7 @@ TODO: MLP vs RBFN
 
 The idea, here, is to train the network by first setting up a subset of weights
 and then by solving efficiently the least squares problem obtained. This
-speeds up the training of the network obtaining (similar?) results w.r.t the
+speeds up the training of the network obtaining better results than the
 previous section.
 
 For what regards the MLP all the weights $w_{ji}$ and the biases $b_j$, with
@@ -230,11 +240,9 @@ section. Hence, the problem becomes a simple linear system:
 
 \[ G_{rc} = g\left( \sum_{i=1}^{n} w_{ci}x_i^r - b_c \right) \]
 
-This method has been performed 10000 times obtaining an error of TODO on the
-training set and an error of TODO on the test set (table \ref{tab:experiments}). In figure
+This method has been performed 10000 times obtaining an error of 0.002 on the
+training set and an error of 0.002 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the MLP found.
-
-TODO: COMPARISON WITH Q1E1
 
 An analogous procedure has been applied to RBFN.
 The centers $c_j$, with $ j \in \{ 1,  ..., N \} $ have been selected by
@@ -244,13 +252,15 @@ are the ones found in the previous section. Here G is defined as:
 
 \[ G_{ij} = \phi\left( \| x^i - c_j \| \right) \]
 
-This method has been performed 10000 times obtaining an error of TODO on the
-training set and an error of TODO on the test set (table \ref{tab:experiments}). In figure
+This method has been performed 10000 times obtaining an error of 0.001 on the
+training set and an error of 0.003 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the RBFN found.
 
-TODO: COMPARISON WITH Q1E2
-
-TODO: implementation of both MLP and RBFN
+This second section has been implemented in Numpy, where the function
+\texttt{np.linalg.solve} has been used to solve the linear system. The best MLP
+is found in 8.24s, while the best RBFN is found in 7.2s. Notice that time
+needed for the  generation of the MLP is slightly higher because the size of
+the hidden layer is higher than the RBFN.
 
 %-------------------------------------------------------------------------------
 
@@ -271,8 +281,8 @@ TODO: E3
 		\hline
 		Full MLP & 75 & 3 & $10^{-5}$ & 0.007 & 0.006 & 25.587s \\
 		Full RBFN & 50 & 0.25 & $10^{-5}$ & 0.005 & 0.005 & 34.770s \\
-		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 0.001s \\
-		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 0.001s \\
+		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 8.240s \\
+		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 7.200s \\
 		TBD & TBD & TBD & TBD & TBD & \textbf{TBD} & TBD \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
