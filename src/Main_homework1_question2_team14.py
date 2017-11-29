@@ -61,7 +61,6 @@ if TEST_MLP:
 			best_mlp = f
 
 	training_computing_time = time.time() - time0
-	avg_training_time = training_computing_time / N_EXPERIMENTS
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
@@ -71,7 +70,7 @@ if TEST_MLP:
 
 	# Update output file:
 	with open("output_homework1_team14.txt","a") as output:
-		utils.write_results_on_file(output, "This is homework 1: question 2.1", best_test_error, avg_training_time, 1, 0)
+		utils.write_results_on_file(output, "This is homework 1: question 2.1", best_test_error, training_computing_time, 1, 0)
 
 # Question 2 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
@@ -120,7 +119,6 @@ if TEST_RBFN:
 			best_rbfn = f
 
 	training_computing_time = time.time() - time0
-	avg_training_time = training_computing_time / N_EXPERIMENTS
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
@@ -130,4 +128,4 @@ if TEST_RBFN:
 
 	# Update output file:
 	with open("output_homework1_team14.txt","a") as output:
-		utils.write_results_on_file(output, "This is homework 1: question 2.2", best_test_error, avg_training_time, 1, 0)
+		utils.write_results_on_file(output, "This is homework 1: question 2.2", best_test_error, training_computing_time, 1, 0)
