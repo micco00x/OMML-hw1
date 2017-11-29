@@ -1,49 +1,14 @@
 import tensorflow as tf
+import numpy as np
+import itertools
+import time
+import utils
 
-# Multi-layer Perceptron:
-class MLP:
-	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
-		self.hidden_layer_size = hidden_layer_size
-		self.sigma = sigma
-		self.rho = rho
-	
-		# Define computational graph:
-		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
-		self.y_placeholder = tf.placeholder(tf.float32)
-
-		W = tf.Variable(tf.truncated_normal([input_layer_size, hidden_layer_size]))
-		b = tf.Variable(tf.truncated_normal([hidden_layer_size]))
-		v = tf.Variable(tf.truncated_normal([hidden_layer_size]))
-
-		g_x = tf.matmul(self.x_placeholder, W) - b
-		g_y = tf.div(1 - tf.exp(-sigma * g_x), 1 + tf.exp(-sigma * g_x)) # tanh(t/2)
-
-		self.y_p = tf.reduce_sum(tf.multiply(v, g_y), 1)
-		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(W)) + tf.reduce_sum(tf.square(b)) + tf.reduce_sum(tf.square(v)))
-
-		# Define optimization algorithm:
-		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[v])
-
-	# Train the MLP on the dataset for a specified number of epochs:
-	def train(self, sess, X_train, Y_train, epochs, verbose=False):
-		tf.global_variables_initializer().run()
-		for epoch in range(epochs):
-			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
-			if verbose:
-				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
-		if verbose:
-			print("")
-
-	# Evaluate the MLP on the test set:
-	def evaluate(self, sess, X_test, Y_test):
-		return sess.run(self.training_error, feed_dict={self.x_placeholder: X_test, self.y_placeholder: Y_test})
-
-	# Predict the output of the MLP given an input:
-	def predict(self, sess, X):
-		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
 
 # Radial Basis Function Network:
 class RBFN:
+	name = "RBFN"
+	
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
@@ -62,18 +27,33 @@ class RBFN:
 
 		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(c)) + tf.reduce_sum(tf.square(v)))
 
-		# Define optimization algorithm:
-		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[])
-
+		# Define optimization algorithm for centers:
+		self.centers_train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[c])
+		
+		# Define optimization algorithm for last layer weights:
+		self.P = tf.placeholder(tf.float32)
+		xmatrix = 2.0*(tf.matmul(self.gaussian_f, self.gaussian_f,True)/(2.0*self.P) + rho*tf.identity(float(hidden_layer_size)))
+		rhs = tf.matmul(self.gaussian_f, tf.expand_dims(self.y_placeholder, 1), True) / self.P
+		
+		self.v_llsq = tf.matrix_solve_ls(xmatrix, rhs, fast=False)
+		self.v_train_step = v.assign(tf.squeeze(self.v_llsq))
+		
+	
 	# Train the RBFN on the dataset for a specified number of epochs:
 	def train(self, sess, X_train, Y_train, epochs, verbose=False):
+		time0 = time.time()
+		
 		tf.global_variables_initializer().run()
 		for epoch in range(epochs):
-			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
+			t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
 			if verbose:
 				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 		if verbose:
 			print("")
+		
+		training_computing_time = time.time() - time0
+		return training_computing_time, 0, 0
 
 	# Evaluate the RBFN on the test set:
 	def evaluate(self, sess, X_test, Y_test):
@@ -82,3 +62,26 @@ class RBFN:
 	# Predict the output of the RBFN given an input:
 	def predict(self, sess, X):
 		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
+
+		
+		
+		
+def plot_approximated_function(regr, session, x_range, y_range, filename):
+	x_grid, y_grid = np.meshgrid(x_range, y_range)
+	input_data = []
+	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
+		input_data.append([x1, x2])
+	input_data = np.array(input_data)
+	z_value = np.array(regr.predict(session, input_data))
+	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
+	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+	
+	
+	
+def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
+	output.write(title)
+	output.write("\nTest MSE," + "%f" % MSE)
+	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
+	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
+	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)
+	
