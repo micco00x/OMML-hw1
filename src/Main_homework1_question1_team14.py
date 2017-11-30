@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import sklearn
+from sklearn import metrics
 import utils
 
 from Functions_homework1_question1_team14 import MLP, RBFN
@@ -57,12 +59,15 @@ if TEST_MLP:
 			# Evaluation
 			best_test_error = best_mlp.evaluate(sess, X_test, Y_test)
 
+		mse = sklearn.metrics.mean_squared_error(best_mlp.predict(sess, X_test), Y_test)
+
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_mlp:", best_mlp.hidden_layer_size, best_mlp.sigma, best_mlp.rho)
+		print("mse:", mse)
 
 		with open("output_homework1_team14.txt","a") as output:
-			utils.write_results_on_file(output, "This is homework 1: question 1.1", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)
+			utils.write_results_on_file(output, "This is homework 1: question 1.1", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)
 
 # Question 1 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
@@ -104,9 +109,12 @@ if TEST_RBFN:
 			# Evaluation
 			best_test_error = best_rbfn.evaluate(sess, X_test, Y_test)
 
+		mse = sklearn.metrics.mean_squared_error(best_rbfn.predict(sess, X_test), Y_test)
+
 		print("best_test_error:", best_test_error)
 		print("best_hparams:", best_hparams)
 		print("best_rbfn:", best_rbfn.hidden_layer_size, best_rbfn.sigma, best_rbfn.rho)
+		print("mse:", mse)
 
 		with open("output_homework1_team14.txt","a") as output:
-			utils.write_results_on_file(output, "This is homework 1: question 1.2", best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)
+			utils.write_results_on_file(output, "This is homework 1: question 1.2", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)

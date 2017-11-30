@@ -62,15 +62,18 @@ if TEST_MLP:
 
 	training_computing_time = (time.time() - time0) / N_EXPERIMENTS
 
+	mse = sklearn.metrics.mean_squared_error(best_mlp(X_test), Y_test)
+
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
+	print("mse:", mse)
 
 	# Generate data to evaluate, used to plot the approximated function:
 	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning")
 
 	# Update output file:
 	with open("output_homework1_team14.txt","a") as output:
-		utils.write_results_on_file(output, "This is homework 1: question 2.1", best_test_error, training_computing_time, 1, 0)
+		utils.write_results_on_file(output, "This is homework 1: question 2.1", mse, training_computing_time, 1, 0)
 
 # Question 2 - Exercise 2: Radial Basis Function Network
 if TEST_RBFN:
@@ -120,12 +123,15 @@ if TEST_RBFN:
 
 	training_computing_time = (time.time() - time0) / N_EXPERIMENTS
 
+	mse = sklearn.metrics.mean_squared_error(best_rbfn(X_test), Y_test)
+
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
+	print("mse:", mse)
 
 	# Generate data to evaluate, used to plot the approximated function:
 	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning")
 
 	# Update output file:
 	with open("output_homework1_team14.txt","a") as output:
-		utils.write_results_on_file(output, "This is homework 1: question 2.2", best_test_error, training_computing_time, 1, 0)
+		utils.write_results_on_file(output, "This is homework 1: question 2.2", mse, training_computing_time, 1, 0)
