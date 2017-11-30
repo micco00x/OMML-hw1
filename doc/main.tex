@@ -260,7 +260,8 @@ This second section has been implemented in Numpy, where the function
 \texttt{np.linalg.solve} has been used to solve the linear system. The best MLP
 is found in 8.24s, while the best RBFN is found in 7.2s. Notice that time
 needed for the  generation of the MLP is slightly higher because the size of
-the hidden layer is higher than the RBFN.
+the hidden layer is higher than the RBFN. Each network, on average,
+is found in around 0.001s.
 
 %-------------------------------------------------------------------------------
 
@@ -281,8 +282,8 @@ TODO: E3
 		\hline
 		Full MLP & 75 & 3 & $10^{-5}$ & 0.007 & 0.006 & 25.587s \\
 		Full RBFN & 50 & 0.25 & $10^{-5}$ & 0.005 & 0.005 & 34.770s \\
-		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 8.240s \\
-		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 7.200s \\
+		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 0.001s \\
+		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 0.001s \\
 		TBD & 50 & 0.25 & $10^{-5}$ & TBD & 0.007 & 0.513s \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
