@@ -60,7 +60,7 @@ if TEST_MLP:
 			best_test_error = test_error
 			best_mlp = f
 
-	training_computing_time = time.time() - time0
+	training_computing_time = (time.time() - time0) / N_EXPERIMENTS
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
@@ -118,7 +118,7 @@ if TEST_RBFN:
 			best_test_error = test_error
 			best_rbfn = f
 
-	training_computing_time = time.time() - time0
+	training_computing_time = (time.time() - time0) / N_EXPERIMENTS
 
 	print("best_training_error:", best_training_error)
 	print("best_test_error:", best_test_error)
