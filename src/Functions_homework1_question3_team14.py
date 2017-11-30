@@ -1,3 +1,4 @@
+from sklearn.model_selection import KFold
 import tensorflow as tf
 import numpy as np
 import itertools
@@ -39,21 +40,38 @@ class RBFN:
 		self.v_train_step = v.assign(tf.squeeze(self.v_llsq))
 		
 	
-	# Train the RBFN on the dataset for a specified number of epochs:
-	def train(self, sess, X_train, Y_train, epochs, verbose=False):
+	# Train the RBFN on the dataset for a specified number of epochs using early stoppin and kfold cross-validation:
+	def train(self, sess, X_train, Y_train, epochs, verbose=False, nfold=4, epsilon_err=1e-5, evaluation_step=50):
+		kf = KFold(n_splits=nfold)
+		last_t_err = float("inf")
+		tot_epochs = 0
 		time0 = time.time()
-		
 		tf.global_variables_initializer().run()
-		for epoch in range(epochs):
-			_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
-			t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+		for epoch in range(epochs*100):
+			t_err = 0
+			#_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
+			#t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			for trn_split, tst_split in kf.split(X_train):
+				_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split], self.P: float(Y_train[trn_split].shape[0])})
+				_, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split]})
+				t_err = t_err + self.evaluate(sess, X_train[tst_split], Y_train[tst_split])
+			t_err = t_err / nfold
+			
+			tot_epochs = epoch
 			if verbose:
-				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
-		if verbose:
-			print("")
+				print("Progress: %.2f%%, Training error: %.6f" % ((epoch+1)/epochs*100, t_err), end="\r")
+			if epoch % evaluation_step == 0:
+				if abs(t_err - last_t_err) < epsilon_err:
+					break
+				last_t_err = t_err
 		
 		training_computing_time = time.time() - time0
-		return training_computing_time, 0, 0
+		
+		if verbose:
+			print("\nTraining time:", training_computing_time)
+			print("EPOCHE SFATTE:", tot_epochs + 1) #REMOVE
+		
+		return training_computing_time, 0, tot_epochs
 
 	# Evaluate the RBFN on the test set:
 	def evaluate(self, sess, X_test, Y_test):

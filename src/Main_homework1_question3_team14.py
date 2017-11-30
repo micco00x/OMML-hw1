@@ -8,15 +8,14 @@ from Functions_homework1_question3_team14 import plot_approximated_function, wri
 # Question 3: Radial Basis Function Network with block decomposition
 print("#################### Radial Basis Function Network #####################")
 
-# Save figures:
 TEST_SIZE = 0.3
 EPOCHS = 150
 ETA = 1e-3
 
 # best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-best_hparams = (50, 0.5, 1e-5)
+best_hparams = (50, 0.25, 1e-5)
 hidden_layer_size = 50
-sigma = 0.5
+sigma = 0.25
 rho = 1e-5
 
 # Double check hparams:
