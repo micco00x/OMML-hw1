@@ -1,103 +1,70 @@
 from sklearn.model_selection import KFold
-from sklearn.cluster import KMeans
 import tensorflow as tf
 import numpy as np
+import sklearn
+from sklearn import cluster
 import itertools
 import time
 import utils
 
+from Functions_homework1_question1_team14 import RBFN
 
 # Radial Basis Function Network:
-class RBFN:
-	name = "RBFN"
-	
+class DecompositionRBFN(RBFN):
+	#name = "RBFN"
+
 	def __init__(self, input_layer_size, hidden_layer_size, sigma, rho, eta=1e-3):
-		self.hidden_layer_size = hidden_layer_size
-		self.sigma = sigma
-		self.rho = rho
-	
-		# Define computational graph:
-		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
-		self.y_placeholder = tf.placeholder(tf.float32)
-		
-		c = tf.Variable(tf.truncated_normal([hidden_layer_size, input_layer_size]))
-		v = tf.Variable(tf.truncated_normal([hidden_layer_size]))
+		super(DecompositionRBFN, self).__init__(input_layer_size, hidden_layer_size, sigma, rho, eta)
 
-		self.g_input = tf.expand_dims(self.x_placeholder, 1) - tf.expand_dims(c, 0) # note: tf supports broadcasting
-		self.gaussian_f = tf.exp(-tf.square(tf.norm(self.g_input, axis=2)/sigma))
-		self.y_p = tf.reduce_sum(tf.multiply(v, self.gaussian_f), 1)
+		# Redefine training error:
+		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * tf.reduce_sum(tf.square(self.c))
 
-		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(c)) + tf.reduce_sum(tf.square(v)))
-		
-		# Define initial centers guess assignment
-		self.initial_centers = tf.placeholder(tf.float32, shape=[hidden_layer_size, input_layer_size])
-		self.centers_assignment = c.assign(self.initial_centers)
+		# Redefine optimization algorithm:
+		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[self.c])
 
-		# Define optimization algorithm for centers:
-		self.centers_train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[c])
-		
-		# Define optimization algorithm for last layer weights:
+		# LLSQ:
 		self.P = tf.placeholder(tf.float32)
-		xmatrix = 2.0*(tf.matmul(self.gaussian_f, self.gaussian_f,True)/(2.0*self.P) + rho*tf.identity(float(hidden_layer_size)))
-		rhs = tf.matmul(self.gaussian_f, tf.expand_dims(self.y_placeholder, 1), True) / self.P
-		
-		self.v_llsq = tf.matrix_solve_ls(xmatrix, rhs, fast=False)
-		self.v_train_step = v.assign(tf.squeeze(self.v_llsq))
-		
-	
+
+		self.llsq_matrix = 2.0 * (tf.matmul(self.gaussian_f, self.gaussian_f, transpose_a=True) / (2.0 * self.P) + rho * tf.eye(hidden_layer_size))
+		self.llsq_rhs = tf.matmul(self.gaussian_f, tf.expand_dims(self.y_placeholder, 1), transpose_a=True) / self.P
+
+		self.update_v = self.v.assign(tf.squeeze(tf.matrix_solve_ls(self.llsq_matrix, self.llsq_rhs, fast=False)))
+
 	# Train the RBFN on the dataset for a specified number of epochs using early stoppin and kfold cross-validation:
-	def train(self, sess, X_train, Y_train, epochs, verbose=True, nfold=4, epsilon_err=1e-5, evaluation_step=50):
-		kf = KFold(n_splits=nfold)
-		
-		tot_epochs = 0
+	def train(self, sess, X_train, Y_train, epochs, verbose=True, nfold=4, epsilon_err=1e-5, evaluation_step=100):
+		tf.global_variables_initializer().run()
 		time0 = time.time()
 		last_t_err = float("inf")
-		
-		tf.global_variables_initializer().run()
-		
+
 		# Initial guess for centers
-		cc = KMeans(n_clusters=self.hidden_layer_size).fit(X_train).cluster_centers_
-		sess.run([self.centers_assignment], feed_dict={self.initial_centers:cc})	#QUESTA LINEA MANNO
-		
+		cc = sklearn.cluster.KMeans(n_clusters=self.hidden_layer_size).fit(X_train).cluster_centers_
+		tf.get_variable("c", shape=(cc.shape[0], cc.shape[1]), initializer=tf.constant_initializer(cc)).initializer.run()
+
 		for epoch in range(epochs):
-			t_err = 0
-			_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
-			t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
-			
+			sess.run(self.update_v, feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: X_train.shape[0]})
+			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+
 			# kfold crossvalidation
 			#for trn_split, tst_split in kf.split(X_train):
 			#	_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split], self.P: float(Y_train[trn_split].shape[0])})
 			#	_, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split]})
 			#	t_err = t_err + self.evaluate(sess, X_train[tst_split], Y_train[tst_split])
 			#t_err = t_err / nfold
-			
-			tot_epochs = epoch
+
 			if verbose:
-				print("Progress: %.2f%%, Training error: %.6f" % ((epoch+1)/epochs*100, t_err), end="\r")
+				print("Progress: %.2f%%, Training error: %.3f" % ((epoch+1)/epochs*100, t_err), end="\r")
 			if epoch % evaluation_step == 0:
 				if abs(t_err - last_t_err) < epsilon_err:
+					print("\nEarly Stopping")
 					break
 				last_t_err = t_err
-		
-		training_computing_time = time.time() - time0
-		
 		if verbose:
-			print("\nTraining time:", training_computing_time)
-			print("EPOCHE SFATTE:", tot_epochs + 1) #REMOVE
-		
-		return training_computing_time, 0, tot_epochs
+			print("")
 
-	# Evaluate the RBFN on the test set:
-	def evaluate(self, sess, X_test, Y_test):
-		return sess.run(self.training_error, feed_dict={self.x_placeholder: X_test, self.y_placeholder: Y_test})
+		training_computing_time = time.time() - time0
+		return training_computing_time, 0, epoch
 
-	# Predict the output of the RBFN given an input:
-	def predict(self, sess, X):
-		return sess.run(self.y_p, feed_dict={self.x_placeholder: X})
 
-		
-		
-		
 def plot_approximated_function(regr, session, x_range, y_range, filename):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
@@ -107,13 +74,3 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
 	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
-	
-	
-	
-def write_results_on_file(output, title, MSE, trainingComputingTime, numFunctionEvaluations, numGradientEvaluations):
-	output.write(title)
-	output.write("\nTest MSE," + "%f" % MSE)
-	output.write("\nTraining computing time," + "%f" % trainingComputingTime)
-	output.write("\nFunction evaluations," + "%i" % numFunctionEvaluations)
-	output.write("\nGradient evaluations," + "%i\n" % numGradientEvaluations)
-	

@@ -66,14 +66,14 @@ class RBFN:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
 		self.y_placeholder = tf.placeholder(tf.float32)
 
-		c = tf.Variable(tf.truncated_normal([hidden_layer_size, input_layer_size]))
-		v = tf.Variable(tf.truncated_normal([hidden_layer_size]))
+		self.c = tf.Variable(tf.truncated_normal([hidden_layer_size, input_layer_size]), name="c")
+		self.v = tf.Variable(tf.truncated_normal([hidden_layer_size]))
 
-		self.g_input = tf.expand_dims(self.x_placeholder, 1) - tf.expand_dims(c, 0) # note: tf supports broadcasting
+		self.g_input = tf.expand_dims(self.x_placeholder, 1) - tf.expand_dims(self.c, 0) # note: tf supports broadcasting
 		self.gaussian_f = tf.exp(-tf.square(tf.norm(self.g_input, axis=2)/sigma))
-		self.y_p = tf.reduce_sum(tf.multiply(v, self.gaussian_f), 1)
+		self.y_p = tf.reduce_sum(tf.multiply(self.v, self.gaussian_f), 1)
 
-		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(c)) + tf.reduce_sum(tf.square(v)))
+		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(self.c)) + tf.reduce_sum(tf.square(self.v)))
 
 		# Define optimization algorithm:
 		self.train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error)
