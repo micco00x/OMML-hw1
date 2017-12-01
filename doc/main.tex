@@ -266,7 +266,9 @@ is found in around 0.001s.
 %-------------------------------------------------------------------------------
 
 \section{Decomposition Method}
-As already introduced in this section it is described the results obtained by a neural network trained using two block decomposition. More in details, the network is a full RBF in which the centers and the output layer weights are updated alternatively in two consequent steps.
+As already introduced before, in this section there are described the results obtained by a neural network trained using two block decomposition. More in details, the network is a full RBF in which the centers and the output layer weights are updated alternatively in two consequent steps.\\
+Took the initial guess for the centers the algorithm search the output layer weights \textit{v} by solving the linear least squared problem already shown in the previus section; the second part consists in adjusting the centers through the gradient descent technique and keeping the weights \textit{v} blocked. These two steps are then iteratively repeated until an early stopping rule results satisfacted: here the training procedure terminates when the improvement made over the last 50 epochs on the training error are not greater than 1e-6.\\
+On top of that, considering that little size of the dataset, the training procedure is done using a 5-fold crossvalidation so to keep the training set as large as possible while computing the training(validation) error on different samples.
 
 %-------------------------------------------------------------------------------
 
