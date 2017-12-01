@@ -37,6 +37,9 @@ with tf.Session() as sess:
 	# Evalation
 	test_error = rbfn.evaluate(sess, X_test, Y_test)
 	
+	# MSE
+	mse = sklearn.metrics.mean_squared_error(rbfn.predict(sess, X_test), Y_test)
+	
 	# Data visualization
 	print("rbfn:", rbfn.hidden_layer_size, rbfn.sigma, rbfn.rho)
 	print("best_test_error:", test_error)
