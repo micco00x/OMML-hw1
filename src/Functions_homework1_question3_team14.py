@@ -1,4 +1,5 @@
 from sklearn.model_selection import KFold
+from sklearn.cluster import KMeans
 import tensorflow as tf
 import numpy as np
 import itertools
@@ -18,7 +19,7 @@ class RBFN:
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
 		self.y_placeholder = tf.placeholder(tf.float32)
-
+		
 		c = tf.Variable(tf.truncated_normal([hidden_layer_size, input_layer_size]))
 		v = tf.Variable(tf.truncated_normal([hidden_layer_size]))
 
@@ -27,6 +28,10 @@ class RBFN:
 		self.y_p = tf.reduce_sum(tf.multiply(v, self.gaussian_f), 1)
 
 		self.training_error = tf.reduce_mean(tf.square(self.y_p - self.y_placeholder)) / 2 + rho * (tf.reduce_sum(tf.square(c)) + tf.reduce_sum(tf.square(v)))
+		
+		# Define initial centers guess assignment
+		self.initial_centers = tf.placeholder(tf.float32, shape=[hidden_layer_size, input_layer_size])
+		self.centers_assignment = c.assign(self.initial_centers)
 
 		# Define optimization algorithm for centers:
 		self.centers_train_step = tf.train.GradientDescentOptimizer(eta).minimize(self.training_error, var_list=[c])
@@ -41,21 +46,30 @@ class RBFN:
 		
 	
 	# Train the RBFN on the dataset for a specified number of epochs using early stoppin and kfold cross-validation:
-	def train(self, sess, X_train, Y_train, epochs, verbose=False, nfold=4, epsilon_err=1e-5, evaluation_step=50):
+	def train(self, sess, X_train, Y_train, epochs, verbose=True, nfold=4, epsilon_err=1e-5, evaluation_step=50):
 		kf = KFold(n_splits=nfold)
-		last_t_err = float("inf")
+		
 		tot_epochs = 0
 		time0 = time.time()
+		last_t_err = float("inf")
+		
 		tf.global_variables_initializer().run()
-		for epoch in range(epochs*100):
+		
+		# Initial guess for centers
+		cc = KMeans(n_clusters=self.hidden_layer_size).fit(X_train).cluster_centers_
+		sess.run([self.centers_assignment], feed_dict={self.initial_centers:cc})	#QUESTA LINEA MANNO
+		
+		for epoch in range(epochs):
 			t_err = 0
-			#_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
-			#t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
-			for trn_split, tst_split in kf.split(X_train):
-				_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split], self.P: float(Y_train[trn_split].shape[0])})
-				_, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split]})
-				t_err = t_err + self.evaluate(sess, X_train[tst_split], Y_train[tst_split])
-			t_err = t_err / nfold
+			_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: float(Y_train.shape[0])})
+			t_err, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
+			
+			# kfold crossvalidation
+			#for trn_split, tst_split in kf.split(X_train):
+			#	_, _ = sess.run([self.v_llsq, self.v_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split], self.P: float(Y_train[trn_split].shape[0])})
+			#	_, _ = sess.run([self.training_error, self.centers_train_step], feed_dict={self.x_placeholder: X_train[trn_split], self.y_placeholder: Y_train[trn_split]})
+			#	t_err = t_err + self.evaluate(sess, X_train[tst_split], Y_train[tst_split])
+			#t_err = t_err / nfold
 			
 			tot_epochs = epoch
 			if verbose:
