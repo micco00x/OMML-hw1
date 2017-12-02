@@ -43,10 +43,12 @@ def plot_franke():
 		for j_idx in range(X.shape[1]):
 			Z[i_idx][j_idx] = franke2d(X[i_idx][j_idx], Y[i_idx][j_idx])
 
-	plot_3d(X, Y, Z)
+	plot_3d(X, Y, Z, "../images/franke", title="Franke's function")
 
-def plot_3d(X, Y, Z, filename=None):
+def plot_3d(X, Y, Z, filename=None, title=None):
 	fig = plt.figure(dpi=720)
+	if title:
+		fig.suptitle(title, fontsize=14, fontweight='bold')
 	ax = fig.gca(projection='3d')
 
 	# Plot the surface.

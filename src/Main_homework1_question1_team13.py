@@ -1,11 +1,10 @@
 import tensorflow as tf
 import numpy as np
-import sklearn
-from sklearn import metrics
+import sklearn.metrics
 import utils
 
 from Functions_homework1_question1_team13 import MLP, RBFN
-from Functions_homework1_question1_team13 import hyperparameters_tuning, plot_approximated_function
+from Functions_homework1_question1_team13 import hyperparameters_tuning
 
 # Debug MLP and RBFN:
 TEST_MLP = True
@@ -37,7 +36,7 @@ if TEST_MLP:
 	SIGMA = [1, 2, 3, 4]
 
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-	best_hparams = (75, 3, 1e-5)
+	best_hparams = (25, 3, 1e-5)
 
 	# Double check hparams:
 	for idx, rho in enumerate(RHO):
@@ -46,18 +45,18 @@ if TEST_MLP:
 	with tf.Session() as sess:
 		## Hyperparameters tuning: (we already have the best params)
 		if TRAIN_MODE:
-			best_mlp, best_hparams, best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations = hyperparameters_tuning(sess, MLP, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG)
-		else:
-			hidden_layer_size, sigma, rho = (best_hparams[0], best_hparams[1], best_hparams[2])
+			best_mlp, best_hparams, best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations = hyperparameters_tuning(sess, MLP, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG, "Full MLP")
 
-			# Best RBFN
-			best_mlp = MLP(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
+		hidden_layer_size, sigma, rho = (best_hparams[0], best_hparams[1], best_hparams[2])
 
-			# Training
-			training_computing_time, num_function_evaluations, num_gradient_evaluations = best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+		# Best RBFN
+		best_mlp = MLP(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
 
-			# Evaluation
-			best_test_error = best_mlp.evaluate(sess, X_test, Y_test)
+		# Training
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_mlp.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+
+		# Evaluation
+		best_test_error = best_mlp.evaluate(sess, X_test, Y_test)
 
 		mse = sklearn.metrics.mean_squared_error(best_mlp.predict(sess, X_test), Y_test)
 
@@ -83,7 +82,7 @@ if TEST_RBFN:
 	SIGMA = [0.25, 0.5, 0.75, 1]
 
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-	best_hparams = (50, 0.25, 1e-5)
+	best_hparams = (70, 0.25, 1e-5)
 
 	# Double check hparams:
 	for idx, rho in enumerate(RHO):
@@ -96,18 +95,18 @@ if TEST_RBFN:
 	with tf.Session() as sess:
 		## Hyperparameters tuning: (we already have the best params)
 		if TRAIN_MODE:
-			best_rbfn, best_hparams, best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations = hyperparameters_tuning(sess, RBFN, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG)
-		else:
-			(hidden_layer_size, sigma, rho) = (best_hparams[0], best_hparams[1], best_hparams[2])
+			best_rbfn, best_hparams, best_test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations = hyperparameters_tuning(sess, RBFN, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG, "Full RBFN")
 
-			# Best RBFN
-			best_rbfn = RBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
+		hidden_layer_size, sigma, rho = (best_hparams[0], best_hparams[1], best_hparams[2])
 
-			# Training
-			training_computing_time, num_function_evaluations, num_gradient_evaluations = best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+		# Best RBFN
+		best_rbfn = RBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
 
-			# Evaluation
-			best_test_error = best_rbfn.evaluate(sess, X_test, Y_test)
+		# Training
+		training_computing_time, num_function_evaluations, num_gradient_evaluations = best_rbfn.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
+
+		# Evaluation
+		best_test_error = best_rbfn.evaluate(sess, X_test, Y_test)
 
 		mse = sklearn.metrics.mean_squared_error(best_rbfn.predict(sess, X_test), Y_test)
 

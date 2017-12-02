@@ -31,7 +31,7 @@ class DecompositionRBFN(RBFN):
 		self.update_v = self.v.assign(tf.squeeze(tf.matrix_solve_ls(self.llsq_matrix, self.llsq_rhs, fast=False)))
 
 	# Train the RBFN on the dataset for a specified number of epochs using early stoppin and kfold cross-validation:
-	def train(self, sess, X_train, Y_train, epochs, verbose=True, nfold=5, epsilon_err=1e-5, evaluation_step=100):
+	def train(self, sess, X_train, Y_train, epochs, verbose=False, nfold=5, epsilon_err=1e-5, evaluation_step=100):
 		tf.global_variables_initializer().run()
 		time0 = time.time()
 		last_t_err = float("inf")
@@ -39,7 +39,7 @@ class DecompositionRBFN(RBFN):
 		# Initial guess for centers
 		cc = sklearn.cluster.KMeans(n_clusters=self.hidden_layer_size, random_state=7370).fit(X_train).cluster_centers_
 		tf.get_variable("c", shape=(cc.shape[0], cc.shape[1]), initializer=tf.constant_initializer(cc)).initializer.run()
-		
+
 		for epoch in range(1, epochs+1):
 			sess.run(self.update_v, feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train, self.P: X_train.shape[0]})
 			t_err, _ = sess.run([self.training_error, self.train_step], feed_dict={self.x_placeholder: X_train, self.y_placeholder: Y_train})
@@ -58,7 +58,7 @@ class DecompositionRBFN(RBFN):
 		return training_computing_time, epoch, epoch
 
 
-def plot_approximated_function(regr, session, x_range, y_range, filename):
+def plot_approximated_function(regr, session, x_range, y_range, filename, title=None):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
 	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
@@ -66,4 +66,4 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	input_data = np.array(input_data)
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""), title)

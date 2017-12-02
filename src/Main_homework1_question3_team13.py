@@ -14,10 +14,10 @@ EPOCHS = 15000
 ETA = 1e-3
 
 # best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-best_hparams = (50, 0.25, 1e-5)
-hidden_layer_size = 50
-sigma = 0.25
-rho = 1e-5
+best_hparams = (70, 0.25, 1e-5)
+hidden_layer_size = best_hparams[0]
+sigma = best_hparams[1]
+rho = best_hparams[2]
 
 # Double check hparams:
 assert TEST_SIZE <= 0.3, "TEST_SIZE must be at most 0.3"
@@ -33,9 +33,9 @@ with tf.Session() as sess:
 	rbfn = DecompositionRBFN(X_train.shape[1], hidden_layer_size, sigma, rho, ETA)
 
 	# Training
-	training_computing_time, num_function_evaluations, num_gradient_evaluations = rbfn.train(sess, X_train, Y_train, epochs=EPOCHS)
+	training_computing_time, num_function_evaluations, num_gradient_evaluations = rbfn.train(sess, X_train, Y_train, epochs=EPOCHS, verbose=True)
 
-	# Evalation
+	# Evaluation
 	mse = sklearn.metrics.mean_squared_error(rbfn.predict(sess, X_test), Y_test)
 
 	# Data visualization
@@ -46,7 +46,7 @@ with tf.Session() as sess:
 	print("test error (MSE):", mse)
 
 	filename = "RBFN_BLOCK_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-	plot_approximated_function(rbfn, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
+	plot_approximated_function(rbfn, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename, "Two blocks RBFN")
 
 	with open("output_homework1_team13.txt","a") as output:
 		utils.write_results_on_file(output, "This is homework 1: question 3", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)

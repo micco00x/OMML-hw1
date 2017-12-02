@@ -1,6 +1,5 @@
 import numpy as np
-import sklearn
-from sklearn import cluster
+import sklearn.cluster
 import time
 import utils
 
@@ -26,7 +25,7 @@ if TEST_MLP:
 	print("########################################################################")
 
 	# hparams:
-	N = 75
+	N = 25
 	sigma = 3
 	rho = 1e-5
 
@@ -69,7 +68,7 @@ if TEST_MLP:
 	print("mse:", mse)
 
 	# Generate data to evaluate, used to plot the approximated function:
-	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning")
+	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning", "Extreme MLP")
 
 	# Update output file:
 	with open("output_homework1_team13.txt","a") as output:
@@ -82,7 +81,7 @@ if TEST_RBFN:
 	print("########################################################################")
 
 	# hparams:
-	N = 50
+	N = 70
 	sigma = 0.25
 	rho = 1e-5
 
@@ -130,7 +129,7 @@ if TEST_RBFN:
 	print("mse:", mse)
 
 	# Generate data to evaluate, used to plot the approximated function:
-	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning")
+	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning", "Unsupervised c. RBFN")
 
 	# Update output file:
 	with open("output_homework1_team13.txt","a") as output:

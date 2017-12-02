@@ -13,6 +13,8 @@ class MLP:
 		self.sigma = sigma
 		self.rho = rho
 
+		tf.set_random_seed(0)
+
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
 		self.y_placeholder = tf.placeholder(tf.float32)
@@ -61,8 +63,8 @@ class RBFN:
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
 		self.rho = rho
-		
-		tf.set_random_seed(7370)
+
+		tf.set_random_seed(0)
 
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
@@ -107,7 +109,7 @@ class RBFN:
 # hyperparameters, the error on the test set, the total time to perform
 # the search, the number of function evaluations and the number of
 # gradient evaluations:
-def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False):
+def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, HIDDEN, SIGMA, RHO, ETA, EPOCHS, SAVE_FIG=False, fig_title=None):
 	best_test_error = float("inf")
 
 	for hparams in itertools.product(*[HIDDEN, SIGMA, RHO]):
@@ -134,7 +136,7 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 		# Generate data to evaluate, used to plot the approximated function:
 		if SAVE_FIG:
 			filename = Model_class.name + "_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
-			plot_approximated_function(model, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
+			plot_approximated_function(model, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename, fig_title)
 
 		# Update best_model:
 		if test_error < best_test_error:
@@ -146,7 +148,7 @@ def hyperparameters_tuning(sess, Model_class, X_train, Y_train, X_test, Y_test, 
 	return best_model, best_hparams, best_test_error, best_training_computing_time, best_num_function_evaluations, best_num_gradient_evaluations
 
 # Plot the function represented by the network regr on a range x_range x y_range:
-def plot_approximated_function(regr, session, x_range, y_range, filename):
+def plot_approximated_function(regr, session, x_range, y_range, filename, title=None):
 	x_grid, y_grid = np.meshgrid(x_range, y_range)
 	input_data = []
 	for x1, x2 in zip(np.ravel(x_grid), np.ravel(y_grid)):
@@ -154,4 +156,4 @@ def plot_approximated_function(regr, session, x_range, y_range, filename):
 	input_data = np.array(input_data)
 	z_value = np.array(regr.predict(session, input_data))
 	z_grid = np.reshape(z_value, (x_grid.shape[0], x_grid.shape[1]))
-	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""))
+	utils.plot_3d(x_grid, y_grid, z_grid, "../images/" + filename.replace(".", ""), title)
