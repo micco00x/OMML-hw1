@@ -73,3 +73,8 @@ Test MSE,0.005671
 Training computing time,0.001367
 Function evaluations,1
 Gradient evaluations,0
+This is homework 1: question 3
+Test MSE,0.008030
+Training computing time,19.806865
+Function evaluations,4600
+Gradient evaluations,4600
