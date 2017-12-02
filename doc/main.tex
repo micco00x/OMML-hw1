@@ -106,7 +106,7 @@
 
 The aim of the homework is to train and compare different neural networks on a
 regression problem. In particular, the regression task is performed on the Franke's
-function, building a dataset from it by sampling 100 random points $(x^i, y^i)$ with noise,
+function building a dataset from it by sampling 100 random points $(x^i, y^i)$ with noise,
 i.e. with $y^i = F(x^i) + \varepsilon^i$ where $\varepsilon^i$ is a random number in
 $[-10^{-1}, 10^{-1}]$ and $F$ is the Franke's function.
 The dataset has been split into a training set (70\% of the dataset)
@@ -135,8 +135,10 @@ Numpy for the learning algorithms and the computation of the tensors.
 As mentioned before, the full minimization is done by using the gradient
 descent algorithm on the training error function, defined as:
 
-\[ E(\omega; \pi) = \frac{1}{2P} \displaystyle\sum_{p=1}^{P} \| f\big(x^p\big) - y^p \|^2
-+ \rho \| \omega \|^2 \]
+\begin{equation}
+  \label{eq:training-error}
+  E(\omega; \pi) = \frac{1}{2P} \displaystyle\sum_{p=1}^{P} \| f\big(x^p\big) - y^p \|^2 + \rho \| \omega \|^2
+\end{equation}
 
 \noindent where $\omega$ = ($v$, $w$, $b$) are the weights,
 $\pi$ = ($N$, $\rho$, $\sigma$) are the hyperparameters, $P$ is the dimension
@@ -160,9 +162,9 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{1, 2, 3, 4\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of 0.007 on the training set and an error of
-0.006 on the test set as it is also possible to see in table \ref{tab:experiments}.
-The hyperparameters found are $N=75$, $\rho=10^{-5}$ and $\sigma=3$. In figure \ref{fig:plots}
+The best result obtained an error of 0.008 on the training set and a mean squared error of
+0.016 on the test set as it is also possible to see in table \ref{tab:experiments}.
+The hyperparameters found are $N=25$, $\rho=10^{-5}$ and $\sigma=3$. In figure \ref{fig:plots}
 the plot of the function computed by the MLP found.
 
 An analogous experiment has been done with the radial basis function network,
@@ -185,8 +187,8 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{0.25, 0.5, 0.75, 1\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of 0.005 on the training set and an error of
-TODO on the test set (see table \ref{tab:experiments}).
+The best result obtained an error of 0.007 on the training set and a mean squared error of
+0.014 on the test set (see table \ref{tab:experiments}).
 The hyperparameters found are $N=50$, $\rho=10^{-5}$ and $\sigma=0.25$. In figure \ref{fig:plots}
 the plot of the function computed by the RBFN found.
 
@@ -194,24 +196,21 @@ As already said before, both training procedures for MLP and RBFN have been
 performed using the gradient descent algorithm for 15000 iterations with a
 learning rate $\eta = 0.001$. This step has been implemented with TensorFlow's
 gradient descent optimizer, defined in \texttt{tf.train.GradientDescentOptimizer}.
-The training of the best network found took 25.587s for the MLP and 34.770s for
+The training of the best network found took 23.343s for the MLP and 34.842s for
 the RBFN.
 
 Studying all the experiments by comparing the difference between the training
 and the error set and the plot of the functions it's possible to see when
 overfitting and underfitting happen. It's interesting to notice that for both
 MLP and RBFN overfitting never happens, in fact for all the tests the difference
-between the training and the test error is so small that can be neglected.
+between the training and the test error is so small that it can be neglected.
 On the other hand it's easy to have underfitting. This is due to the fact that
 the number of hidden neurons are not sufficient to make the network obtain a
 small error. Moreover, since the size of the training set is small, it's
 harder for the network the learn the Franke's function.
 
-The RBFN performs slightly better than the MLP. The amount of time needed for
-the RBFN to train is higher than the MLP, but it's interesting to notice from the
-experiments that the former converges faster. This allows space for future
-improvements where the training phase could be reduced with early stopping or
-similar techniques.
+The RBFN performs slightly better than the MLP. The experiments didn't show
+an improvement of the performances with the use of early stopping algorithm.
 
 %-------------------------------------------------------------------------------
 
@@ -240,8 +239,8 @@ section. Hence, the problem becomes a simple linear system:
 
 \[ G_{rc} = g\left( \sum_{i=1}^{n} w_{ci}x_i^r - b_c \right) \]
 
-This method has been performed 10000 times obtaining an error of 0.002 on the
-training set and an error of 0.002 on the test set (table \ref{tab:experiments}). In figure
+This method has been performed 10000 times obtaining an error of 0.003 on the
+training set and a mean squared error of 0.008 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the MLP found.
 
 An analogous procedure has been applied to RBFN.
@@ -253,50 +252,82 @@ are the ones found in the previous section. Here G is defined as:
 \[ G_{ij} = \phi\left( \| x^i - c_j \| \right) \]
 
 This method has been performed 10000 times obtaining an error of 0.001 on the
-training set and an error of 0.003 on the test set (table \ref{tab:experiments}). In figure
+training set and a mean squared error of 0.006 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the RBFN found.
 
 This second section has been implemented in Numpy, where the function
 \texttt{np.linalg.solve} has been used to solve the linear system. The best MLP
-is found in 8.24s, while the best RBFN is found in 7.2s. Notice that time
-needed for the  generation of the MLP is slightly higher because the size of
-the hidden layer is higher than the RBFN. Each network, on average,
+is found in 2.67s, while the best RBFN is found in 13.67s. Each network, on average,
 is found in around 0.001s.
 
 %-------------------------------------------------------------------------------
 
 \section{Decomposition Method}
-As already introduced before, in this section there are described the results obtained by a neural network trained using two block decomposition. More in details, the network is a full RBF, built using the best hyperparameters found in the full minimization section, in which the centers and the output layer weights are updated alternatively in two consequent steps.\\
-Took the initial guess for the centers using the K-means algorithm is a similar way to the unsupervised c. RBFN, the algorithm searches the output layer weights \textit{v} by solving the linear least squared problem already shown in the previus section; the second part consists in adjusting the centers through the gradient descent technique while keeping the weights \textit{v} blocked. These two steps are then iteratively repeated in each epoch until an early stopping rule results satisfacted: here the training procedure terminates when the improvement made over the last 100 epochs on the training error are not greater than 1e-5.\\
-The network and training implementation has been done using Tensorflow: more in details the centers convex optimization is done by solving the linear system using the function \texttt{tf.matrix\_solve\_ls} while the non-convex optimization of the weights \textit{v} is performed using the \texttt{tf.train.GradientDescentOptimizer}.\\
-In this setting the network obtained an error of TRAINING\_ERROR\_HERE on the training error after NUM\_EPOCHS before being stopped by the early stopping rule; finally it achieved a test error of TEST\_ERROR\_HERE.\\
+As already introduced before, this section describes the results obtained by a
+neural network trained using the two block decomposition method.
+More in details, the network is a full RBFN built using the best hyperparameters
+found in the first section, where a full minimization method is used.
+Here the centers and the output layer weights are updated alternatively in two consequent steps.
+
+Given the initial guess of the centers using the K-means algorithm,
+the network is determined by solving the linear least squared problem
+(already discussed in the previus section) w.r.t. the output layer and by
+adjusting the centers through the gradient descent technique while keeping the
+weights \textit{v} constant.
+These two steps are iteratively repeated for each epoch until the early
+stopping algorithm doesn't see improvement on the training error of at least
+1e-5 over the last 100 epochs .
+
+The network and the training implementation have been done using Tensorflow.
+In particular, the convex optimization of the weights
+\textit{v} is done by solving the linear system of equations using the function
+\texttt{tf.matrix\_solve\_ls}, while the non-convex optimization of the centers
+\textit{c} is performed using the gradient descent algorithm of TensorFlow,
+defined in \texttt{tf.train.GradientDescentOptimizer}.
+
+The network obtained a training error of 0.003 after 500 epochs making
+500 function evaluations and 500 gradient evaluations before being
+blocked by the early stopping algorithm.
+The mean squared error is of 0.008 on the test set. Even if this method has not
+obtained the best result it's important to notice that the computation took only
+2.169s, which is a massive improvement w.r.t. the other methods.
 These results are listed and compared to the ones of the previous section in the table \ref{tab:experiments} .
 
 %-------------------------------------------------------------------------------
 
 \section{Conclusion}
 
+The implementation of different learning strategies made it possible to
+compare not only the accuracy obtained by the different networks but also the
+amount of time that each network actually needs to converge to a solution.
+
+It's interesting to notice that the extreme learning approach not only
+outperforms the full optimization method, but it also gives a solution
+in a very short period of time. Moreover, the decomposition method,
+considering the high number of experiments done in the
+second part, is even better in terms of computing time, obtaining similar
+errors with respect to the extreme learning approach.
+
 \begin{table}
 	%\setlength\tabcolsep{1.5pt}
 	\footnotesize
 	\centering
 	\begin{tabular}{*{7}{c}}
-		Neural Network & N & $\sigma$ & $\rho$ & Training Error & Test Error & Time \\
+		Neural Network & N & $\sigma$ & $\rho$ & Training Error & MSE Test Set & Time \\
 		\hline
-		Full MLP & 75 & 3 & $10^{-5}$ & 0.007 & 0.006 & 25.587s \\
-		Full RBFN & 50 & 0.25 & $10^{-5}$ & 0.005 & 0.005 & 34.770s \\
-		Extreme MLP & 75 & 3 & $10^{-5}$ & 0.002 & 0.002 & 0.001s \\
-		Unsupervised c. RBFN & 50 & 0.25 & $10^{-5}$ & 0.001 & 0.003 & 0.001s \\
-		TBD & 50 & 0.25 & $10^{-5}$ & TBD & 0.007 & 0.513s \\
+		Full MLP & 25 & 3 & $10^{-5}$ & 0.008 & 0.016 & 23.343s \\
+		Full RBFN & 70 & 0.25 & $10^{-5}$ & 0.007 & 0.014 & 34.842s \\
+		Extreme MLP & 25 & 3 & $10^{-5}$ & 0.003 & 0.008 & 0.001s \\
+		Unsupervised c. RBFN & 70 & 0.25 & $10^{-5}$ & 0.001 & 0.006 & 0.001s \\
+		Two Blocks RBFN & 70 & 0.25 & $10^{-5}$ & 0.003 & 0.008 & 2.169s \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
+    The training error is computed with equation \ref{eq:training-error} on
+    the training set. The MSE is computed on the test set.
 		The last column shows the amount of time needed to train each
 		specific network.}
 	\label{tab:experiments}
 \end{table}
-
-Conclusion. (Remember to say that all experiments have been performed on
-a kind of computer)
 
 \begin{figure}[H]
 	\centering
@@ -306,11 +337,11 @@ a kind of computer)
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/MLP_N_75_sigma_3_rho_1e-05.png}
+		\includegraphics[width=1.0\linewidth]{images/MLP_N_25_sigma_3_rho_1e-05.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/RBFN_N_50_sigma_025_rho_00001.png}
+		\includegraphics[width=1.0\linewidth]{images/RBFN_N_70_sigma_025_rho_1e-05.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
@@ -322,10 +353,10 @@ a kind of computer)
 	\end{subfigure}
   \begin{subfigure}{.32\textwidth}
     \centering
-    \includegraphics[width=1.0\linewidth]{images/RBFN_BLOCK_N_50_sigma_05_rho_1e-05.png}
+    \includegraphics[width=1.0\linewidth]{images/RBFN_BLOCK_N_70_sigma_025_rho_1e-05.png}
   \end{subfigure}
 	\caption{In order: the Franke's function and the functions obtained by
-		Full MLP, Full RBFN, Extreme MLP, Unisupervised c. RBFN and TBD.
+		Full MLP, Full RBFN, Extreme MLP, Unsupervised c. RBFN and Two Blocks RBFN.
 		The hyperparameters used for each network are specified in table
 		\ref{tab:experiments}.}
 	\label{fig:plots}
