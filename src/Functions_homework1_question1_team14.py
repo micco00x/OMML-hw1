@@ -61,6 +61,8 @@ class RBFN:
 		self.hidden_layer_size = hidden_layer_size
 		self.sigma = sigma
 		self.rho = rho
+		
+		tf.set_random_seed(7370)
 
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])

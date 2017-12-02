@@ -1,4 +1,5 @@
 import tensorflow as tf
+import sklearn.metrics
 import numpy as np
 import utils
 
@@ -35,14 +36,17 @@ with tf.Session() as sess:
 	training_computing_time, num_function_evaluations, num_gradient_evaluations = rbfn.train(sess, X_train, Y_train, epochs=EPOCHS)
 
 	# Evalation
-	test_error = rbfn.evaluate(sess, X_test, Y_test)
+	mse = sklearn.metrics.mean_squared_error(rbfn.predict(sess, X_test), Y_test)
 
 	# Data visualization
 	print("rbfn:", rbfn.hidden_layer_size, rbfn.sigma, rbfn.rho)
-	print("best_test_error:", test_error)
+	print("training_computing_time:", training_computing_time)
+	print("num_function_evaluations:", num_function_evaluations)
+	print("num_gradient_evaluations:", num_gradient_evaluations)
+	print("test error (MSE):", mse)
 
 	filename = "RBFN_BLOCK_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
 	plot_approximated_function(rbfn, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
 
 	with open("output_homework1_team14.txt","a") as output:
-		utils.write_results_on_file(output, "This is homework 1: question 3", test_error, training_computing_time, num_function_evaluations, num_gradient_evaluations)
+		utils.write_results_on_file(output, "This is homework 1: question 3", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)
