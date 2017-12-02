@@ -285,12 +285,10 @@ In particular, the convex optimization of the weights
 \textit{c} is performed using the gradient descent algorithm of TensorFlow,
 defined in \texttt{tf.train.GradientDescentOptimizer}.
 
-The network obtained a training error of 0.003 after 500 epochs making
-500 function evaluations and 500 gradient evaluations before being
+The network obtained a training error of 0.002 after 4600 epochs making
+4600 function evaluations and 4600 gradient evaluations before being
 blocked by the early stopping algorithm.
-The mean squared error is of 0.008 on the test set. Even if this method has not
-obtained the best result it's important to notice that the computation took only
-2.169s, which is a massive improvement w.r.t. the other methods.
+The mean squared error is of 0.008 on the test set. The training took 19.807s.
 These results are listed and compared to the ones of the previous section in the table \ref{tab:experiments} .
 
 %-------------------------------------------------------------------------------
@@ -303,10 +301,7 @@ amount of time that each network actually needs to converge to a solution.
 
 It's interesting to notice that the extreme learning approach not only
 outperforms the full optimization method, but it also gives a solution
-in a very short period of time. Moreover, the decomposition method,
-considering the high number of experiments done in the
-second part, is even better in terms of computing time, obtaining similar
-errors with respect to the extreme learning approach.
+in a very short period of time. TO CONTINUE.
 
 \begin{table}
 	%\setlength\tabcolsep{1.5pt}
@@ -319,7 +314,7 @@ errors with respect to the extreme learning approach.
 		Full RBFN & 70 & 0.25 & $10^{-5}$ & 0.007 & 0.014 & 34.842s \\
 		Extreme MLP & 25 & 3 & $10^{-5}$ & 0.003 & 0.008 & 0.001s \\
 		Unsupervised c. RBFN & 70 & 0.25 & $10^{-5}$ & 0.001 & 0.006 & 0.001s \\
-		Two Blocks RBFN & 70 & 0.25 & $10^{-5}$ & 0.003 & 0.008 & 2.169s \\
+		Two Blocks RBFN & 70 & 0.25 & $10^{-5}$ & 0.002 & 0.008 & 19.807s \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
     The training error is computed with equation \ref{eq:training-error} on
