@@ -3,8 +3,8 @@ import sklearn.metrics
 import numpy as np
 import utils
 
-from Functions_homework1_question3_team14 import DecompositionRBFN
-from Functions_homework1_question3_team14 import plot_approximated_function
+from Functions_homework1_question3_team13 import DecompositionRBFN
+from Functions_homework1_question3_team13 import plot_approximated_function
 
 # Question 3: Radial Basis Function Network with block decomposition
 print("#################### Radial Basis Function Network #####################")
@@ -48,5 +48,5 @@ with tf.Session() as sess:
 	filename = "RBFN_BLOCK_N_" + str(hidden_layer_size) + "_sigma_" + str(sigma) + "_rho_" + str(rho)
 	plot_approximated_function(rbfn, sess, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), filename)
 
-	with open("output_homework1_team14.txt","a") as output:
+	with open("output_homework1_team13.txt","a") as output:
 		utils.write_results_on_file(output, "This is homework 1: question 3", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)

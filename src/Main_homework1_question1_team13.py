@@ -4,8 +4,8 @@ import sklearn
 from sklearn import metrics
 import utils
 
-from Functions_homework1_question1_team14 import MLP, RBFN
-from Functions_homework1_question1_team14 import hyperparameters_tuning, plot_approximated_function
+from Functions_homework1_question1_team13 import MLP, RBFN
+from Functions_homework1_question1_team13 import hyperparameters_tuning, plot_approximated_function
 
 # Debug MLP and RBFN:
 TEST_MLP = True
@@ -66,7 +66,7 @@ if TEST_MLP:
 		print("best_mlp:", best_mlp.hidden_layer_size, best_mlp.sigma, best_mlp.rho)
 		print("mse:", mse)
 
-		with open("output_homework1_team14.txt","a") as output:
+		with open("output_homework1_team13.txt","a") as output:
 			utils.write_results_on_file(output, "This is homework 1: question 1.1", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)
 
 # Question 1 - Exercise 2: Radial Basis Function Network
@@ -116,5 +116,5 @@ if TEST_RBFN:
 		print("best_rbfn:", best_rbfn.hidden_layer_size, best_rbfn.sigma, best_rbfn.rho)
 		print("mse:", mse)
 
-		with open("output_homework1_team14.txt","a") as output:
+		with open("output_homework1_team13.txt","a") as output:
 			utils.write_results_on_file(output, "This is homework 1: question 1.2", mse, training_computing_time, num_function_evaluations, num_gradient_evaluations)

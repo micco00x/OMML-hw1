@@ -7,7 +7,7 @@ import itertools
 import time
 import utils
 
-from Functions_homework1_question1_team14 import RBFN
+from Functions_homework1_question1_team13 import RBFN
 
 # Radial Basis Function Network:
 class DecompositionRBFN(RBFN):

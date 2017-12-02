@@ -4,7 +4,7 @@ from sklearn import cluster
 import time
 import utils
 
-from Functions_homework1_question2_team14 import generate_MLP, generate_RBFN, plot_approximated_function
+from Functions_homework1_question2_team13 import generate_MLP, generate_RBFN, plot_approximated_function
 
 TEST_MLP = True
 TEST_RBFN = True
@@ -72,7 +72,7 @@ if TEST_MLP:
 	plot_approximated_function(best_mlp, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/MLP_Extreme_Learning")
 
 	# Update output file:
-	with open("output_homework1_team14.txt","a") as output:
+	with open("output_homework1_team13.txt","a") as output:
 		utils.write_results_on_file(output, "This is homework 1: question 2.1", mse, training_computing_time, 1, 0)
 
 # Question 2 - Exercise 2: Radial Basis Function Network
@@ -133,5 +133,5 @@ if TEST_RBFN:
 	plot_approximated_function(best_rbfn, np.arange(0, 1, 0.01), np.arange(0, 1, 0.01), "../images/RBFN_Extreme_Learning")
 
 	# Update output file:
-	with open("output_homework1_team14.txt","a") as output:
+	with open("output_homework1_team13.txt","a") as output:
 		utils.write_results_on_file(output, "This is homework 1: question 2.2", mse, training_computing_time, 1, 0)
