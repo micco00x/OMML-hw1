@@ -1,80 +1,25 @@
 This is homework 1: question 1.1
-Test MSE,75.377003
-Training computing time,26.368025
+Test MSE,0.014199
+Training computing time,25.031084
 Function evaluations,0
 Gradient evaluations,15000
 This is homework 1: question 1.2
-Test MSE,2.401181
-Training computing time,32.176919
+Test MSE,0.009981
+Training computing time,33.780528
 Function evaluations,0
 Gradient evaluations,15000
 This is homework 1: question 2.1
-Test MSE,0.009620
-Training computing time,0.000748
+Test MSE,0.004671
+Training computing time,0.000471
 Function evaluations,1
 Gradient evaluations,0
 This is homework 1: question 2.2
-Test MSE,0.005338
-Training computing time,0.000697
-Function evaluations,1
-Gradient evaluations,0
-This is homework 1: question 1.1
-Test MSE,0.019330
-Training computing time,27.486768
-Function evaluations,0
-Gradient evaluations,15000
-This is homework 1: question 1.2
-Test MSE,0.008791
-Training computing time,31.764394
-Function evaluations,0
-Gradient evaluations,15000
-This is homework 1: question 2.1
-Test MSE,0.008058
-Training computing time,0.000788
-Function evaluations,1
-Gradient evaluations,0
-This is homework 1: question 2.2
-Test MSE,0.005671
-Training computing time,0.001015
+Test MSE,0.008391
+Training computing time,0.001105
 Function evaluations,1
 Gradient evaluations,0
 This is homework 1: question 3
-Test MSE,0.007497
-Training computing time,21.893444
-Function evaluations,7000
-Gradient evaluations,7000
-This is homework 1: question 3
-Test MSE,0.008020
-Training computing time,2.168733
-Function evaluations,500
-Gradient evaluations,500
-This is homework 1: question 1.1
-Test MSE,0.033311
-Training computing time,24.825845
-Function evaluations,0
-Gradient evaluations,15000
-This is homework 1: question 1.1
-Test MSE,0.015822
-Training computing time,23.343456
-Function evaluations,0
-Gradient evaluations,15000
-This is homework 1: question 1.2
-Test MSE,0.013603
-Training computing time,34.842354
-Function evaluations,0
-Gradient evaluations,15000
-This is homework 1: question 2.1
-Test MSE,0.007837
-Training computing time,0.000267
-Function evaluations,1
-Gradient evaluations,0
-This is homework 1: question 2.2
-Test MSE,0.005671
-Training computing time,0.001367
-Function evaluations,1
-Gradient evaluations,0
-This is homework 1: question 3
-Test MSE,0.008030
-Training computing time,19.806865
-Function evaluations,4600
-Gradient evaluations,4600
+Test MSE,0.008468
+Training computing time,0.832492
+Function evaluations,200
+Gradient evaluations,200

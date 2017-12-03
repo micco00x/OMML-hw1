@@ -25,8 +25,8 @@ if TEST_MLP:
 	print("########################################################################")
 
 	# hparams:
-	N = 25
-	sigma = 3
+	N = 50
+	sigma = 4
 	rho = 1e-5
 
 	# g activation function as specified in Q1E1:
@@ -82,7 +82,7 @@ if TEST_RBFN:
 
 	# hparams:
 	N = 70
-	sigma = 0.25
+	sigma = 0.5
 	rho = 1e-5
 
 	# Select the centers using K-means clustering:

@@ -36,7 +36,7 @@ if TEST_MLP:
 	SIGMA = [1, 2, 3, 4]
 
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-	best_hparams = (25, 3, 1e-5)
+	best_hparams = (50, 4, 1e-5)
 
 	# Double check hparams:
 	for idx, rho in enumerate(RHO):
@@ -82,7 +82,7 @@ if TEST_RBFN:
 	SIGMA = [0.25, 0.5, 0.75, 1]
 
 	# best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-	best_hparams = (70, 0.25, 1e-5)
+	best_hparams = (70, 0.5, 1e-5)
 
 	# Double check hparams:
 	for idx, rho in enumerate(RHO):

@@ -13,7 +13,7 @@ class MLP:
 		self.sigma = sigma
 		self.rho = rho
 
-		tf.set_random_seed(0)
+		tf.set_random_seed(3)
 
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])
@@ -64,7 +64,7 @@ class RBFN:
 		self.sigma = sigma
 		self.rho = rho
 
-		tf.set_random_seed(0)
+		tf.set_random_seed(3)
 
 		# Define computational graph:
 		self.x_placeholder = tf.placeholder(tf.float32, shape=[None, input_layer_size])

@@ -14,7 +14,7 @@ EPOCHS = 15000
 ETA = 1e-3
 
 # best hparams (hidden_layer_size, sigma, rho) (found through gridsearch)
-best_hparams = (70, 0.25, 1e-5)
+best_hparams = (70, 0.5, 1e-5)
 hidden_layer_size = best_hparams[0]
 sigma = best_hparams[1]
 rho = best_hparams[2]
