@@ -11,10 +11,10 @@ TEST_MLP = True
 TEST_RBFN = True
 
 # Save figures:
-SAVE_FIG = True
+SAVE_FIG = False
 
 # Train the networks by performing a grid search on the hyperparameters:
-TRAIN_MODE = True
+TRAIN_MODE = False
 
 # Generate dataset:
 TEST_SIZE = 0.3
