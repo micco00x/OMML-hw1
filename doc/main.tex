@@ -124,8 +124,7 @@ and then by solving a linear least squares problem. In the decomposition method
 the error is minimized by alternating a convex minimization w.r.t. the output
 weights and a non-convex minimization w.r.t. all the other weights.
 
-The best result has been obtained with TODO, which has an error of \textbf{TODO}
-on the test set. The project has been developed in Python with TensorFlow and
+The project has been developed in Python with TensorFlow and
 Numpy for the learning algorithms and the computation of the tensors.
 
 %-------------------------------------------------------------------------------
@@ -162,9 +161,9 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{1, 2, 3, 4\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of 0.008 on the training set and a mean squared error of
-0.016 on the test set as it is also possible to see in table \ref{tab:experiments}.
-The hyperparameters found are $N=25$, $\rho=10^{-5}$ and $\sigma=3$. In figure \ref{fig:plots}
+The best result obtained an error of 0.009 on the training set and a mean squared error of
+0.014 on the test set as it is also possible to see in table \ref{tab:experiments}.
+The hyperparameters found are $N=50$, $\rho=10^{-5}$ and $\sigma=4$. In figure \ref{fig:plots}
 the plot of the function computed by the MLP found.
 
 An analogous experiment has been done with the radial basis function network,
@@ -187,16 +186,16 @@ grid search over all the possible combinations of the hyperparameters in:
 \times \Big\{0.25, 0.5, 0.75, 1\Big\} \]
 
 \noindent selecting the network with the lowest error on the test set.
-The best result obtained an error of 0.007 on the training set and a mean squared error of
-0.014 on the test set (see table \ref{tab:experiments}).
-The hyperparameters found are $N=50$, $\rho=10^{-5}$ and $\sigma=0.25$. In figure \ref{fig:plots}
+The best result obtained an error of 0.006 on the training set and a mean squared error of
+0.010 on the test set (see table \ref{tab:experiments}).
+The hyperparameters found are $N=70$, $\rho=10^{-5}$ and $\sigma=0.5$. In figure \ref{fig:plots}
 the plot of the function computed by the RBFN found.
 
 As already said before, both training procedures for MLP and RBFN have been
 performed using the gradient descent algorithm for 15000 iterations with a
 learning rate $\eta = 0.001$. This step has been implemented with TensorFlow's
 gradient descent optimizer, defined in \texttt{tf.train.GradientDescentOptimizer}.
-The training of the best network found took 23.343s for the MLP and 34.842s for
+The training of the best network found took 25.031s for the MLP and 33.781s for
 the RBFN.
 
 Studying all the experiments by comparing the difference between the training
@@ -239,8 +238,8 @@ section. Hence, the problem becomes a simple linear system:
 
 \[ G_{rc} = g\left( \sum_{i=1}^{n} w_{ci}x_i^r - b_c \right) \]
 
-This method has been performed 10000 times obtaining an error of 0.003 on the
-training set and a mean squared error of 0.008 on the test set (table \ref{tab:experiments}). In figure
+This method has been performed 10000 times obtaining an error of 0.002 on the
+training set and a mean squared error of 0.005 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the MLP found.
 
 An analogous procedure has been applied to RBFN.
@@ -251,13 +250,13 @@ are the ones found in the previous section. Here G is defined as:
 
 \[ G_{ij} = \phi\left( \| x^i - c_j \| \right) \]
 
-This method has been performed 10000 times obtaining an error of 0.001 on the
-training set and a mean squared error of 0.006 on the test set (table \ref{tab:experiments}). In figure
+This method has been performed 10000 times obtaining an error of 0.002 on the
+training set and a mean squared error of 0.008 on the test set (table \ref{tab:experiments}). In figure
 \ref{fig:plots} the plot of the function computed by the RBFN found.
 
 This second section has been implemented in Numpy, where the function
 \texttt{np.linalg.solve} has been used to solve the linear system. The best MLP
-is found in 2.67s, while the best RBFN is found in 13.67s. Each network, on average,
+is found in 4.71s, while the best RBFN is found in 11.05s. Each network, on average,
 is found in around 0.001s.
 
 %-------------------------------------------------------------------------------
@@ -285,10 +284,10 @@ In particular, the convex optimization of the weights
 \textit{c} is performed using the gradient descent algorithm of TensorFlow,
 defined in \texttt{tf.train.GradientDescentOptimizer}.
 
-The network obtained a training error of 0.002 after 4600 epochs making
-4600 function evaluations and 4600 gradient evaluations before being
+The network obtained a training error of 0.003 after 200 epochs making
+200 function evaluations and 200 gradient evaluations before being
 blocked by the early stopping algorithm.
-The mean squared error is of 0.008 on the test set. The training took 19.807s.
+The mean squared error is of 0.008 on the test set. The training took 0.832s.
 These results are listed and compared to the ones of the previous section in the table \ref{tab:experiments} .
 
 %-------------------------------------------------------------------------------
@@ -300,8 +299,10 @@ compare not only the accuracy obtained by the different networks but also the
 amount of time that each network actually needs to converge to a solution.
 
 It's interesting to notice that the extreme learning approach not only
-outperforms the full optimization method, but it also gives a solution
-in a very short period of time. TO CONTINUE.
+outperforms the full optimization method, but it gives a solution
+in a very short period of time. Moreover, the decomposition method, considering
+the high number of experiments of the second part, is able to obtain similar
+results in an even shorter period of time thanks to the early stopping algorithm.
 
 \begin{table}
 	%\setlength\tabcolsep{1.5pt}
@@ -310,11 +311,11 @@ in a very short period of time. TO CONTINUE.
 	\begin{tabular}{*{7}{c}}
 		Neural Network & N & $\sigma$ & $\rho$ & Training Error & MSE Test Set & Time \\
 		\hline
-		Full MLP & 25 & 3 & $10^{-5}$ & 0.008 & 0.016 & 23.343s \\
-		Full RBFN & 70 & 0.25 & $10^{-5}$ & 0.007 & 0.014 & 34.842s \\
-		Extreme MLP & 25 & 3 & $10^{-5}$ & 0.003 & 0.008 & 0.001s \\
-		Unsupervised c. RBFN & 70 & 0.25 & $10^{-5}$ & 0.001 & 0.006 & 0.001s \\
-		Two Blocks RBFN & 70 & 0.25 & $10^{-5}$ & 0.002 & 0.008 & 19.807s \\
+		Full MLP & 50 & 4 & $10^{-5}$ & 0.009 & 0.014 & 25.031s \\
+		Full RBFN & 70 & 0.5 & $10^{-5}$ & 0.006 & 0.010 & 33.781s \\
+		Extreme MLP & 50 & 4 & $10^{-5}$ & 0.002 & 0.005 & 0.001s \\
+		Unsupervised c. RBFN & 70 & 0.5 & $10^{-5}$ & 0.002 & 0.008 & 0.001s \\
+		Two Blocks RBFN & 70 & 0.5 & $10^{-5}$ & 0.003 & 0.008 & 0.832s \\
 	\end{tabular}
 	\caption{Results of the experiments described in the previous sections.
     The training error is computed with equation \ref{eq:training-error} on
@@ -332,11 +333,11 @@ in a very short period of time. TO CONTINUE.
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/MLP_N_25_sigma_3_rho_1e-05.png}
+		\includegraphics[width=1.0\linewidth]{images/MLP_N_50_sigma_4_rho_1e-05.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
-		\includegraphics[width=1.0\linewidth]{images/RBFN_N_70_sigma_025_rho_1e-05.png}
+		\includegraphics[width=1.0\linewidth]{images/RBFN_N_70_sigma_05_rho_1e-05.png}
 	\end{subfigure}
 	\begin{subfigure}{.32\textwidth}
 		\centering
@@ -348,7 +349,7 @@ in a very short period of time. TO CONTINUE.
 	\end{subfigure}
   \begin{subfigure}{.32\textwidth}
     \centering
-    \includegraphics[width=1.0\linewidth]{images/RBFN_BLOCK_N_70_sigma_025_rho_1e-05.png}
+    \includegraphics[width=1.0\linewidth]{images/RBFN_BLOCK_N_70_sigma_05_rho_1e-05.png}
   \end{subfigure}
 	\caption{In order: the Franke's function and the functions obtained by
 		Full MLP, Full RBFN, Extreme MLP, Unsupervised c. RBFN and Two Blocks RBFN.
